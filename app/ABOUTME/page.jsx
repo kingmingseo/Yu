@@ -53,7 +53,7 @@ export default function Aboutme() {
             Yu Gwang Yeong<p className="text-sm sm:text-lg font-extralight ml-0">Fashion Model</p>
           </h1>
           {/* SNS 아이콘 추가 */}
-          <div className="absolute right-2 flex sm:mt-4 mx-4 mt-1  space-x-2">
+          <div className="sm:static absolute right-2 sm:right-10 flex sm:mt-4 mx-4 mt-1 space-x-2">
             <a
               href="https://www.instagram.com/yu_gwang0/" // Instagram 링크
               target="_blank"
