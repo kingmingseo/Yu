@@ -50,10 +50,10 @@ export default function Aboutme() {
 
         <div className="flex flex-row">
           <h1 className="text-2xl sm:text-4xl font-semibold text-white">
-            Yu Gwang Yeong<p className="text-sm sm:text-lg font-extralight sm:ml-0 ml-2">Fashion Model</p>
+            Yu Gwang Yeong<p className="text-sm sm:text-lg font-extralight ml-0">Fashion Model</p>
           </h1>
           {/* SNS 아이콘 추가 */}
-          <div className="flex mt-4 mx-4 space-x-2">
+          <div className="absolute right-2 flex sm:mt-4 mx-4 mt-1  space-x-2">
             <a
               href="https://www.instagram.com/yu_gwang0/" // Instagram 링크
               target="_blank"
@@ -72,7 +72,7 @@ export default function Aboutme() {
             </a>
           </div>
         </div>
-        <pre className="sm:mt-4 h-3/4 bg-black rounded-md shadow-md font-semibold leading-relaxed text-sm sm:text-base whitespace-pre-wrap sm:mr-14">
+        <pre className="mt-4 h-3/4 bg-black rounded-md shadow-md font-semibold leading-relaxed text-sm sm:text-base whitespace-pre-wrap sm:mr-14">
           {data[0]?.intro || ""}
         </pre>
 
