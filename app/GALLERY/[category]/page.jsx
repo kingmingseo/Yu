@@ -28,7 +28,7 @@ export default function Gallery() {
       if (response.ok) {
         const result = await response.json();
         setData(result);
-        
+
       } else {
         console.error("Failed to fetch intro:", response.status);
       }
@@ -40,7 +40,7 @@ export default function Gallery() {
   useEffect(() => {
     getData(category);
   }, []);
-  
+
   return (
     <>
       <div className="px-4 grid grid-cols-2 gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ">
@@ -49,16 +49,21 @@ export default function Gallery() {
           [...data].map((item, index) => (
             <div
               key={index}
-              className="flex flex-col w-full object-cover justify-center items-center"
+              className="flex flex-col w-full h-full justify-center items-center"
             >
-              <a href={`/GALLERY/${category}/${item._id}`} className="flex flex-col items-center w-full h-full">
+              <a
+                href={`/GALLERY/${category}/${item._id}`}
+                className="flex items-center justify-center w-full h-full"
+              >
                 <img
                   src={item.mainImage} // DB에 저장된 이미지 URL
                   alt={item.title}
-                  className="sm:w-5/6 h-auto object-cover object-top overflow-hidden"
+                  className="sm:w-5/6 h-auto object-contain"
                 />
-                <h1 className="mt-3 text-sm sm:text-base font-extralight text-center">{item.title}</h1>
               </a>
+              <h1 className="mt-1 sm:mt-3 text-sm sm:text-lg font-extralight text-center">
+                {item.title}
+              </h1>
             </div>
           ))
         ) : (
