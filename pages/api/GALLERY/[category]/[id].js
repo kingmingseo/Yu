@@ -2,14 +2,13 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 
 export default async function handler(request, respond) {
-  const { id } = request.query;
+  const { id, category } = request.query;
   const client = await connectDB;
   const db = client.db("Yu");
-  const collection = "dailylife"
-  console.log(id)
+
   if (request.method === "GET") {
     try {
-      const data = await db.collection(collection).findOne({
+      const data = await db.collection(category.toLowerCase()).findOne({
         _id: new ObjectId(id)
       });
 
@@ -27,7 +26,7 @@ export default async function handler(request, respond) {
 
   else if (request.method === "DELETE") {
     try {
-      const result = await db.collection(collection).deleteOne({
+      const result = await db.collection(category.toLowerCase()).deleteOne({
         _id: new ObjectId(id)
       });
 
@@ -37,7 +36,7 @@ export default async function handler(request, respond) {
         });
       }
 
-      console.log(`Deleted document from ${collection}:`, id);
+      console.log(`Deleted document from ${category.toLowerCase()}:`, id);
       respond.status(200).json({
         message: "성공적으로 삭제되었습니다.",
         deletedId: id

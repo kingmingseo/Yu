@@ -43,7 +43,6 @@ export default function Aboutme() {
       <div className="flex sm:justify-end justify-center sm:h-3/4 sm:mr-14">
         <img
           src={data[0].src}
-          alt="Image 1"
           className="sm:w-5/6 object-contain object-top overflow-hidden"
         />
       </div>
