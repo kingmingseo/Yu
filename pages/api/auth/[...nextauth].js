@@ -34,7 +34,7 @@ export const authOptions = {
     })
   ],
   pages: {
-    // signIn: '/LOGIN', // 커스텀 로그인 페이지 경로
+    signIn: '/LOGIN', // 커스텀 로그인 페이지 경로
   },
 
   //3. jwt 써놔야 잘됩니다 + jwt 만료일설정

@@ -2,11 +2,11 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 
 export default async function handler(request, respond) {
-  const { id } = request.query;
+  const { category, id } = request.query;
   const client = await connectDB;
   const db = client.db("Yu");
   const collection = "dailylife"
-  console.log(id)
+
   if (request.method === "GET") {
     try {
       const data = await db.collection(collection).findOne({

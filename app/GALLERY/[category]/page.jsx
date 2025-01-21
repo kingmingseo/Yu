@@ -49,13 +49,13 @@ export default function Gallery() {
           [...data].map((item, index) => (
             <div
               key={index}
-              className="flex flex-col w-full h- object-cover justify-center items-center"
+              className="flex flex-col w-full object-cover justify-center items-center"
             >
               <a href={`/GALLERY/${category}/${item._id}`} className="flex flex-col items-center w-full h-full">
                 <img
                   src={item.mainImage} // DB에 저장된 이미지 URL
                   alt={item.title}
-                  className="sm:w-5/6 h-full object-cover object-top overflow-hidden"
+                  className="sm:w-5/6 h-auto object-cover object-top overflow-hidden"
                 />
                 <h1 className="mt-3 text-sm sm:text-base font-extralight text-center">{item.title}</h1>
               </a>

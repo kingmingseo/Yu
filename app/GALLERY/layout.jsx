@@ -9,7 +9,7 @@ export default function GalleryLayout({ children }) {
     return <>{children}</>;
   }
   return (
-    <>
+    <div>
       <aside className="sm:hidden text-sm grid grid-cols-4 grid-rows-2 gap-1 top-16 left-0 w-full place-items-center mb-5">
         <Link
           className={pathname === '/GALLERY/LOOKBOOK' ? "underline" : "no-underline"}
@@ -121,7 +121,7 @@ export default function GalleryLayout({ children }) {
         {/* 비어 있는 공간 */}
         <div className="sm:col-span-1 hidden"></div>
       </div>
-    </>
+    </div>
 
   );
 }

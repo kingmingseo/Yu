@@ -9,14 +9,14 @@ export default function Detail() {
   const [data, setData] = useState(null);
   let params = usePathname();
   let paramsTemp = params.split('/');
-  let category = paramsTemp[paramsTemp.length - 2];
   let id = paramsTemp[paramsTemp.length - 1];
+  console.log(id)
   const session = useSession();
   const router = useRouter();
 
   const getData = async () => {
     try {
-      const response = await fetch(`/api/GALLERY/${category}/${id}`, {
+      const response = await fetch(`/api/DAILYLIFE/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export default function Detail() {
   const deleteData = async () => {
     if (confirm("정말로 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`/api/GALLERY/${category}/${id}`, {
+        const response = await fetch(`/api/DAILYLIFE/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -46,7 +46,7 @@ export default function Detail() {
 
         if (response.ok) {
           alert("성공적으로 삭제되었습니다.");
-          router.push(`/GALLERY/${category}`);
+          router.push(`/DAILYLIFE}`);
         } else {
           alert("삭제에 실패했습니다.");
         }
