@@ -14,18 +14,18 @@ export default async function handler(req, res) {
   try {
     // Nodemailer transporter 설정
     const transporter = nodemailer.createTransport({
-      service: "gmail", // 네이버 이메일을 사용
+      service: "gmail", // 
       auth: {
-        user: "multi197122@gmail.com", // 본인의 지메일
-        pass: "jezf vini ohlm iniq", // 네이버 이메일 비밀번호 또는 앱 비밀번호
+        user: "singi0707@gmail.com", // 본인의 지메일
+        pass: "ixoh pseh flgi fpku", // 네이버 이메일 비밀번호 또는 앱 비밀번호
       },
     });
 
     // 이메일 옵션
     const mailOptions = {
       from: email,
-      to: "multi197122@gmail.com", // 수신자 이메일
-      subject: `New Contact Form Submission from ${name}`,
+      to: "singi0707@naver.com", // 수신자 이메일
+      subject: `[Yu] New Contact Form Submission from ${name}`,
       text: `
         Name: ${name}
         Email: ${email}
