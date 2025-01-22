@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { FaPen } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function DailyLife() {
   const router = useRouter();
@@ -53,19 +54,19 @@ export default function DailyLife() {
                 key={index}
                 className="flex flex-col w-full justify-center items-center"
               >
-                <a
+                <Link
                   href={`/DAILYLIFE/${item._id}`}
-                  className="flex flex-col items-center w-full h-full"
+                  className="flex flex-col justify-center items-center w-full h-full"
                 >
                   <img
                     src={item.mainImage} // DB에 저장된 이미지 URL
                     alt={item.title}
-                    className="sm:w-5/6 w-full h-auto object-cover overflow-hidden"
+                    className="sm:w-5/6 h-auto object-contain"
                   />
-                  <h1 className="mt-3 text-sm sm:text-base font-extralight text-center">
-                    {item.title}
-                  </h1>
-                </a>
+                </Link>
+                <h1 className="mt-1 sm:mt-3 text-sm sm:text-lg font-extralight text-center">
+                  {item.title}
+                </h1>
               </div>
             ))
           ) : (

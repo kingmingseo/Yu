@@ -48,9 +48,9 @@ export default function Navigation() {
         </div>
 
         {/* 로고는 모바일에서도 항상 중앙에 위치 */}
-        <a className="text-3xl sm:text-6xl font-regular font-brygada text-white mx-auto" href="/">
+        <Link className="text-3xl sm:text-6xl font-regular font-brygada text-white mx-auto" href="/">
           Yu
-        </a>
+        </Link>
 
         {/* 데스크탑 화면에서 메뉴 */}
         <div className="hidden sm:flex flex-grow justify-center gap-24 sm:gap-10 md:gap-12 lg:gap-16">

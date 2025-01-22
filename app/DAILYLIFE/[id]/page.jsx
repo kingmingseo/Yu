@@ -46,7 +46,7 @@ export default function Detail() {
 
         if (response.ok) {
           alert("성공적으로 삭제되었습니다.");
-          router.push(`/DAILYLIFE}`);
+          router.push(`/DAILYLIFE`);
         } else {
           alert("삭제에 실패했습니다.");
         }

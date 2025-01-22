@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link"; // Link 컴포넌트 import
 import { FaPen } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
@@ -51,7 +52,7 @@ export default function Gallery() {
               key={index}
               className="flex flex-col w-full h-full justify-center items-center"
             >
-              <a
+              <Link
                 href={`/GALLERY/${category}/${item._id}`}
                 className="flex items-center justify-center w-full h-full"
               >
@@ -60,7 +61,7 @@ export default function Gallery() {
                   alt={item.title}
                   className="sm:w-5/6 h-auto object-contain"
                 />
-              </a>
+              </Link>
               <h1 className="mt-1 sm:mt-3 text-sm sm:text-lg font-extralight text-center">
                 {item.title}
               </h1>
