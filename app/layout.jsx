@@ -1,3 +1,4 @@
+import AudioPlayer from "@/components/bgmplayer";
 import ".//globals.css";
 import MarginWrapper from "@/components/marginwrapper";
 import Navigation from "@/components/navigation";
@@ -15,6 +16,7 @@ export default async function RootLayout({ children }) {
         <Providers>
           <Navigation />
           <MarginWrapper>{children}</MarginWrapper> {/* 경로에 따라 마진 처리 */}
+          <AudioPlayer />
         </Providers>
       </body>
     </html>

@@ -73,7 +73,7 @@ export default function Detail() {
           <img
             className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
             src={data.mainImage}
-            alt="Main Image"
+
           />
         )}
 
@@ -84,7 +84,7 @@ export default function Detail() {
               key={index}
               className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
               src={image}
-              alt={`Content Image ${index + 1}`}
+
             />
           ))
         ) : (
