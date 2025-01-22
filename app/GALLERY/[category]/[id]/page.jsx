@@ -71,7 +71,7 @@ export default function Detail() {
         {/* 메인 이미지 먼저 표시 */}
         {data && data.mainImage && (
           <img
-            className="sm:w-3/6 h-full object-contain object-top overflow-hidden mb-10 px-5"
+            className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
             src={data.mainImage}
             alt="Main Image"
           />
@@ -82,7 +82,7 @@ export default function Detail() {
           data.contentImages.map((image, index) => (
             <img
               key={index}
-              className="sm:w-3/6 h-full object-contain overflow-hidden object-top mb-10 px-5"
+              className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
               src={image}
               alt={`Content Image ${index + 1}`}
             />
