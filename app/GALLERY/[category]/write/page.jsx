@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/common/Button";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -223,12 +224,7 @@ export default function WritePage() {
         </div>
       </div>
 
-      <button
-        className="border w-full border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition mx-auto block"
-        onClick={postData}
-      >
-        Post
-      </button>
+      <Button label="Post" onClick={postData} />
     </div>
   );
 }

@@ -9,7 +9,6 @@ export const metadata = {
   description: "The Best Korean Fashion Model Yu's Page"
 };
 export default async function RootLayout({ children }) {
- 
   return (
     <html>
       <body>
