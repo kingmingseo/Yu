@@ -14,7 +14,7 @@ export default function Gallery() {
   const [data, setData] = useState();
 
   const writeNewPost = () => {
-    router.push(`/GALLERY/${category}/write`);
+    router.push(`/WRITE/GALLERY?category=${category}`);
   };
 
   const getData = async (category) => {

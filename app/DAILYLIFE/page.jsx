@@ -12,7 +12,7 @@ export default function DailyLife() {
   const [data, setData] = useState();
 
   const writeNewPost = () => {
-    router.push(`/DAILYLIFE/write`);
+    router.push(`/WRITE/DAILYLIFE`);
   };
 
   const getData = async () => {

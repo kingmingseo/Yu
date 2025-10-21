@@ -9,15 +9,18 @@ export default async function middleware(req) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 토큰이 있지만 user가 없거나 admin 속성이 없는 경우
   if (!token.user || !token.user.admin) {
     const denyUrl = new URL("/DENY", req.url);
-    return NextResponse.redirect(denyUrl);  // 권한 없는 경우 DENY 페이지로 리다이렉트
+    return NextResponse.redirect(denyUrl);
   }
 
-  return NextResponse.next(); // 요청 진행
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/ABOUTME/update", "/GALLERY/:segment/write"], // 미들웨어를 적용할 경로
+  matcher: [
+    "/ABOUTME/update", 
+    "/WRITE/:section",     // 통합 작성 페이지 (GALLERY, DAILYLIFE)
+    "/GALLERY/:category/:id/update"  // GALLERY 업데이트 페이지
+  ],
 };

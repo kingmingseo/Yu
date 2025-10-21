@@ -1,6 +1,5 @@
 "use client";
-import Button from "@/components/common/Button";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 export default function WritePage() {
@@ -11,10 +10,21 @@ export default function WritePage() {
   const [contentImages, setContentImages] = useState([]); // 미리보기용
   const [contentImageUrls, setContentImageUrls] = useState([]); // S3 URL용
 
-  let category = usePathname();
-  category = category.split('/');
-  category = category[category.length - 2];
-
+  // 동적 라우팅 파라미터 가져오기
+  const params = useParams();
+  const section = params.section;  
+  
+  // Query Parameter 가져오기 (GALLERY용 category)
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');  // GALLERY일 때만 사용
+  
+  // 디버깅
+  console.log('=== Write Page Debug ===');
+  console.log('params:', params);
+  console.log('section:', section);
+  console.log('category:', category);
+  console.log('searchParams:', Object.fromEntries(searchParams.entries()));
+  
   const handleMainImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -103,9 +113,25 @@ export default function WritePage() {
       return;
     }
 
+    // 동적 API 엔드포인트 생성
+    const apiEndpoint = section === 'GALLERY' 
+      ? `/api/GALLERY/${category}`
+      : `/api/${section}/${section.toLowerCase()}`;
+    
+    // 동적 리다이렉트 경로 생성
+    const redirectPath = section === 'GALLERY'
+      ? `/GALLERY/${category}`
+      : `/${section}`;
+
+    console.log('=== Post Data Debug ===');
+    console.log('section:', section);
+    console.log('category:', category);
+    console.log('apiEndpoint:', apiEndpoint);
+    console.log('redirectPath:', redirectPath);
+
     // S3 URL을 포함한 데이터 전송
     try {
-      const response = await fetch(`/api/GALLERY/${category}`, {
+      const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,7 +143,7 @@ export default function WritePage() {
 
       if (response.ok) {
         alert("글 작성이 완료되었습니다.");
-        router.push(`/GALLERY/${category}`);
+        router.push(redirectPath);
       } else {
         alert("알 수 없는 오류 [글 작성 실패].");
       }
@@ -224,7 +250,12 @@ export default function WritePage() {
         </div>
       </div>
 
-      <Button label="Post" onClick={postData} />
+      <button
+        className="border w-full border-white text-white px-4 py-2 rounded hover:bg-white hover:text-black transition mx-auto block"
+        onClick={postData}
+      >
+        Post
+      </button>
     </div>
   );
 }
