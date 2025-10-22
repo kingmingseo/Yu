@@ -4,6 +4,7 @@ import React from "react";
 import { connectDB } from "@/util/database";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import Image from "next/image";
 
 export const revalidate = false;
 
@@ -33,9 +34,11 @@ export default async function Gallery({ params }) {
                 href={`/GALLERY/${category}/${item._id}`}
                 className="flex items-center justify-center w-full h-full"
               >
-                <img
+                <Image
                   src={item.mainImage} // DB에 저장된 이미지 URL
                   alt={item.title}
+                  width={400}
+                  height={600}
                   className="sm:w-5/6 h-auto object-contain"
                 />
               </Link>

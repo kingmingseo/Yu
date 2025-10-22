@@ -2,6 +2,7 @@
 import GeneralButton from "@/components/common/GeneralButton";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import imageCompression from "browser-image-compression";
 
 export default function WritePage() {
   const [title, setTitle] = useState("");
@@ -40,22 +41,25 @@ export default function WritePage() {
       const abortController = new AbortController();
       setMainImageAbortController(abortController);
       
-      // 미리보기용 URL 생성
-      setMainImage(URL.createObjectURL(file));
-      
       // 로딩 시작
       setIsMainImageUploading(true);
 
       // S3 업로드 로직
       try {
-        const filename = encodeURIComponent(file.name);
+        // 이미지 압축
+        const compressedFile = await compressImage(file);
+        
+        // 미리보기용 URL 생성 (압축된 파일로)
+        setMainImage(URL.createObjectURL(compressedFile));
+        
+        const filename = encodeURIComponent(compressedFile.name.replace(/\.[^/.]+$/, ".webp"));
         let res = await fetch("/api/image?file=" + filename, {
           signal: abortController.signal
         });
         res = await res.json();
 
         const formData = new FormData();
-        Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
+        Object.entries({ ...res.fields, file: compressedFile }).forEach(([key, value]) => {
           formData.append(key, value);
         });
 
@@ -88,8 +92,6 @@ export default function WritePage() {
 
   const handleContentImagesUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map((file) => URL.createObjectURL(file));
-    setContentImages((prev) => [...prev, ...newImages]);
 
     // 기존 업로드 취소
     if (contentImagesAbortController) {
@@ -104,9 +106,18 @@ export default function WritePage() {
     setIsContentImagesUploading(true);
 
     try {
+      // 모든 파일을 압축
+      const compressedFiles = await Promise.all(
+        files.map(file => compressImage(file))
+      );
+      
+      // 미리보기용 URL 생성 (압축된 파일들로)
+      const newImages = compressedFiles.map(file => URL.createObjectURL(file));
+      setContentImages(prev => [...prev, ...newImages]);
+
       const uploadedUrls = await Promise.all(
-        files.map(async (file) => {
-          const filename = encodeURIComponent(file.name);
+        compressedFiles.map(async (file) => {
+          const filename = encodeURIComponent(file.name.replace(/\.[^/.]+$/, ".webp"));
           let res = await fetch("/api/image?file=" + filename, {
             signal: abortController.signal
           });

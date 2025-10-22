@@ -4,6 +4,7 @@ import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import DeleteButton from "@/components/common/DeleteButton";
+import Image from "next/image";
 
 export const revalidate = false;
 
@@ -25,19 +26,25 @@ export default async function Detail({ params }) {
 
         {/* 메인 이미지 먼저 표시 */}
         {data && data.mainImage && (
-          <img
+          <Image
             className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
             src={data.mainImage}
+            alt={data.title}
+            width={600}
+            height={800}
           />
         )}
 
         {/* 컨텐츠 이미지들 표시 */}
         {data && data.contentImages && data.contentImages.length > 0 ? (
           data.contentImages.map((image, index) => (
-            <img
+            <Image
               key={index}
               className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
               src={image}
+              alt={`${data.title} content ${index + 1}`}
+              width={600}
+              height={800}
             />
           ))
         ) : (

@@ -10,7 +10,18 @@ export default async function handler(request, response) {
   const { collection, id } = request.query;
 
   // 유효한 컬렉션인지 확인
-  const validCollections = ["dailylife", "sponsorship", "profile", "art", "aboutme"];
+  const validCollections = [
+    "dailylife", 
+    "sponsorship", 
+    "lookbook", 
+    "polaroid", 
+    "beauty", 
+    "media", 
+    "mv", 
+    "video", 
+    "magazine", 
+    "profile"
+  ];
   if (!validCollections.includes(collection)) {
     return response.status(400).json({
       message: "유효하지 않은 컬렉션입니다."

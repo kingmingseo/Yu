@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { connectDB } from "@/util/database";
 import Link from "next/link";
+import Image from "next/image";
 
 export const revalidate = false; // ISR: 무한 캐시
 
@@ -31,9 +32,11 @@ export default async function Sponsorship() {
                   href={`/SPONSORSHIP/${item._id}`}
                   className="flex flex-col justify-center items-center w-full h-full"
                 >
-                  <img
+                  <Image
                     src={item.mainImage} // DB에 저장된 이미지 URL
                     alt={item.title}
+                    width={400}
+                    height={600}
                     className="sm:w-5/6 h-auto object-contain"
                   />
                 </Link>
