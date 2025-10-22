@@ -1,7 +1,7 @@
 import { connectDB } from "@/util/database";
 
 export async function POST(request, { params }) {
-  const { collection } = params;
+  const { collection } = await params;
 
   // 유효한 컬렉션인지 확인
   const validCollections = [
@@ -28,24 +28,40 @@ export async function POST(request, { params }) {
     const db = client.db("Yu");
 
     // 요청 본문에서 데이터 추출
-    const { title, mainImage, contentImages } = await request.json();
+    const { title, mainImage, mainVideo, contentImages, contentVideos } = await request.json();
 
-    // 필수 필드 검증 (컨텐츠 이미지는 선택사항)
-    if (!title || !mainImage) {
-      return Response.json({
-        message: "제목과 메인 이미지는 필수입니다.",
-        details: {
-          hasTitle: !!title,
-          hasMainImage: !!mainImage
-        }
-      }, { status: 400 });
+    // 컬렉션 타입에 따른 필수 필드 검증
+    if (collection === 'mv' || collection === 'video') {
+      // MV, VIDEO 컬렉션은 mainVideo 필수
+      if (!title || !mainVideo) {
+        return Response.json({
+          message: "제목과 메인 영상은 필수입니다.",
+          details: {
+            hasTitle: !!title,
+            hasMainVideo: !!mainVideo
+          }
+        }, { status: 400 });
+      }
+    } else {
+      // 다른 컬렉션은 mainImage 필수
+      if (!title || !mainImage) {
+        return Response.json({
+          message: "제목과 메인 이미지는 필수입니다.",
+          details: {
+            hasTitle: !!title,
+            hasMainImage: !!mainImage
+          }
+        }, { status: 400 });
+      }
     }
 
     // 데이터베이스에 삽입할 문서 생성
     const document = {
       title,
-      mainImage,
-      contentImages: contentImages || [], // 빈 배열로 기본값 설정
+      mainImage: mainImage || null,
+      mainVideo: mainVideo || null,
+      contentImages: contentImages || [],
+      contentVideos: contentVideos || [],
       createdAt: new Date(),
       updatedAt: new Date()
     };

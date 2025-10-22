@@ -2,7 +2,7 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 
 export async function DELETE(request, { params }) {
-  const { collection, id } = params;
+  const { collection, id } = await params;
 
   // 유효한 컬렉션인지 확인
   const validCollections = [
