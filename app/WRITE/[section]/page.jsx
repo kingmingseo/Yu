@@ -32,7 +32,7 @@ export default function WritePage() {
   // 이미지 압축 함수
   const compressImage = async (file) => {
     const options = {
-      maxSizeMB: 0.5, // 최대 파일 크기 500KB (더 작게)
+      maxSizeMB: 1, // 최대 파일 크기 500KB (더 작게)
       maxWidthOrHeight: 1920, // 최대 해상도 1920px
       useWebWorker: false, // 웹 워커 비활성화 (타임아웃 방지)
       fileType: 'image/webp', // WebP 포맷으로 변환
