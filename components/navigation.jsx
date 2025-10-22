@@ -43,7 +43,12 @@ export default function Navigation() {
       >
         {/* 모바일에서 햄버거 버튼 */}
         <div className="sm:hidden absolute left-5">
-          <button onClick={toggleMenu} className="text-white">
+          <button 
+            onClick={toggleMenu} 
+            className="text-white"
+            aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={menuOpen}
+          >
             ☰ {/* 햄버거 아이콘 */}
           </button>
         </div>

@@ -55,6 +55,7 @@ export default function DeleteButton({ category, id, section = "GALLERY" }) {
     <button
       className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
       onClick={deleteData}
+      aria-label="게시물 삭제"
     >
       <FaTrash size={20} />
     </button>

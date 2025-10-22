@@ -17,9 +17,6 @@ export default function WritePage() {
   const [isContentImagesUploading, setIsContentImagesUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   
-  // 업로드 취소를 위한 AbortController
-  const [mainImageAbortController, setMainImageAbortController] = useState(null);
-  const [contentImagesAbortController, setContentImagesAbortController] = useState(null);
 
   // 동적 라우팅 파라미터 가져오기
   const params = useParams();
@@ -36,8 +33,8 @@ export default function WritePage() {
       maxWidthOrHeight: 1920, // 최대 해상도 1920px
       useWebWorker: false, // 웹 워커 비활성화 (타임아웃 방지)
       fileType: 'image/webp', // WebP 포맷으로 변환
-      quality: 0.6, // 품질 60% (더 강한 압축)
-      initialQuality: 0.7, // 초기 품질
+      quality: 0.7, // 품질 70% (더 강한 압축)
+      initialQuality: 0.8, // 초기 품질
       alwaysKeepResolution: false, // 해상도 조정 허용
     };
 
@@ -59,15 +56,6 @@ export default function WritePage() {
   const handleMainImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 기존 업로드 취소
-      if (mainImageAbortController) {
-        mainImageAbortController.abort();
-      }
-      
-      // 새로운 AbortController 생성
-      const abortController = new AbortController();
-      setMainImageAbortController(abortController);
-      
       // 로딩 시작
       setIsMainImageUploading(true);
 
@@ -80,9 +68,7 @@ export default function WritePage() {
         setMainImage(URL.createObjectURL(compressedFile));
         
         const filename = encodeURIComponent(compressedFile.name.replace(/\.[^/.]+$/, ".webp"));
-        let res = await fetch("/api/image?file=" + filename, {
-          signal: abortController.signal
-        });
+        let res = await fetch("/api/image?file=" + filename);
         res = await res.json();
 
         const formData = new FormData();
@@ -92,8 +78,7 @@ export default function WritePage() {
 
         let uploadResult = await fetch(res.url, {
           method: "POST",
-          body: formData,
-          signal: abortController.signal
+          body: formData
         });
 
         if (uploadResult.ok) {
@@ -112,22 +97,12 @@ export default function WritePage() {
       } finally {
         // 로딩 종료
         setIsMainImageUploading(false);
-        setMainImageAbortController(null);
       }
     }
   };
 
   const handleContentImagesUpload = async (e) => {
     const files = Array.from(e.target.files);
-
-    // 기존 업로드 취소
-    if (contentImagesAbortController) {
-      contentImagesAbortController.abort();
-    }
-    
-    // 새로운 AbortController 생성
-    const abortController = new AbortController();
-    setContentImagesAbortController(abortController);
 
     // 로딩 시작
     setIsContentImagesUploading(true);
@@ -145,9 +120,7 @@ export default function WritePage() {
       const uploadedUrls = await Promise.all(
         compressedFiles.map(async (file) => {
           const filename = encodeURIComponent(file.name.replace(/\.[^/.]+$/, ".webp"));
-          let res = await fetch("/api/image?file=" + filename, {
-            signal: abortController.signal
-          });
+          let res = await fetch("/api/image?file=" + filename);
           res = await res.json();
 
           const formData = new FormData();
@@ -157,8 +130,7 @@ export default function WritePage() {
 
           let uploadResult = await fetch(res.url, {
             method: "POST",
-            body: formData,
-            signal: abortController.signal
+            body: formData
           });
 
           if (uploadResult.ok) {
@@ -179,7 +151,6 @@ export default function WritePage() {
     } finally {
       // 로딩 종료
       setIsContentImagesUploading(false);
-      setContentImagesAbortController(null);
     }
   };
 

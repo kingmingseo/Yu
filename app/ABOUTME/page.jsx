@@ -6,6 +6,17 @@ import Link from "next/link";
 
 export const revalidate = false;
 
+export const metadata = {
+  title: 'About Me',
+  description: 'Korean fashion model Yu Gwang Yeong - Learn about my journey, experience, and passion for fashion modeling.',
+  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'about me', 'model biography', 'fashion model profile'],
+  openGraph: {
+    title: 'About Me - Yu Gwang Yeong',
+    description: 'Korean fashion model Yu Gwang Yeong - Learn about my journey, experience, and passion for fashion modeling.',
+    type: 'profile',
+  },
+};
+
 export default async function Aboutme() {
   const client = await connectDB;
   const db = client.db("Yu");
@@ -35,6 +46,7 @@ export default async function Aboutme() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-pink-500 transition-all"
+              aria-label="Instagram 프로필로 이동"
             >
               <FaInstagram size={24} />
             </a>
@@ -43,6 +55,7 @@ export default async function Aboutme() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-white hover:text-red-500 transition-all"
+              aria-label="YouTube 채널로 이동"
             >
               <FaYoutube size={24} />
             </a>
@@ -56,7 +69,10 @@ export default async function Aboutme() {
       {session && (
         <div className="fixed bottom-10 right-10">
           <Link href="/ABOUTME/update">
-            <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+            <button 
+              className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+              aria-label="소개 페이지 편집"
+            >
               <FaPen size={20} />
             </button>
           </Link>

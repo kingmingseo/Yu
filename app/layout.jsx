@@ -5,12 +5,47 @@ import Navigation from "@/components/navigation";
 import Providers from "@/components/provider"
 
 export const metadata = {
-  title: 'Yu',
-  description: "The Best Korean Fashion Model Yu's Page"
+  title: {
+    default: 'Yu Gwang Yeong - Korean Fashion Model',
+    template: '%s | Yu Gwang Yeong'
+  },
+  description: "Korean fashion model Yu Gwang Yeong's official portfolio. Discover her latest work, gallery, daily life, and professional modeling services.",
+  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'fashion portfolio', 'modeling', 'Korea', 'fashion', 'photography'],
+  authors: [{ name: 'Yu Gwang Yeong' }],
+  creator: 'Yu Gwang Yeong',
+  publisher: 'Yu Gwang Yeong',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    url: 'https://your-domain.com',
+    title: 'Yu Gwang Yeong - Korean Fashion Model',
+    description: "Korean fashion model Yu Gwang Yeong's official portfolio. Discover her latest work, gallery, daily life, and professional modeling services.",
+    siteName: 'Yu Gwang Yeong',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Yu Gwang Yeong - Korean Fashion Model',
+    description: "Korean fashion model Yu Gwang Yeong's official portfolio.",
+    creator: '@yu_gwang0',
+  },
+  verification: {
+    google: 'your-google-verification-code', // Google Search Console에서 받은 코드로 교체
+  },
 };
 export default async function RootLayout({ children }) {
   return (
-    <html>
+    <html lang="ko">
       <body>
         <Providers>
           <Navigation />

@@ -3,6 +3,7 @@ export default function GeneralButton({
   label,
   type = undefined,
   onClick = () => {},
+  ariaLabel,
 }) {
   return (
     <button
@@ -10,6 +11,8 @@ export default function GeneralButton({
       className="hover:underline focus:outline-none h-full w-full border py-3 flex items-center justify-center"
       disabled={isLoading} // 로딩 중 버튼 비활성화
       onClick={onClick}
+      aria-label={ariaLabel || label}
+      aria-disabled={isLoading}
     >
       {isLoading ? (
         <svg

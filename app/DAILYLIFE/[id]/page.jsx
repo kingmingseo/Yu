@@ -54,7 +54,10 @@ export default async function Detail({ params }) {
       {session && (
         <div className="flex gap-2 fixed bottom-10 right-5 sm:right-10">
           <Link href={`/DAILYLIFE/${id}/update`}>
-            <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+            <button 
+              className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+              aria-label="일상 게시물 편집"
+            >
               <FaPen size={20} />
             </button>
           </Link>

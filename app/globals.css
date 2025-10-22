@@ -4,16 +4,25 @@
 @font-face {
   font-family: 'Inter';
   src: url('/fonts/Inter.ttf');
+  font-display: swap;
+  font-weight: 100 900;
+  font-style: normal;
 }
 
 @font-face {
   font-family: 'Brygada';
   src: url('/fonts/Brygada.ttf');
+  font-display: swap;
+  font-weight: 100 900;
+  font-style: normal;
 }
 
 @font-face {
   font-family: 'Roboto';
   src: url('/fonts/Roboto.ttf');
+  font-display: swap;
+  font-weight: 100 900;
+  font-style: normal;
 }
 
 html,
@@ -121,11 +130,22 @@ section {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', 'Inter-fallback', sans-serif;
   line-height: 1;
   background-color: black;
   color: white;
   font-size: 18px;
+}
+
+/* 폰트 메트릭 오버라이드로 레이아웃 시프트 방지 */
+@font-face {
+  font-family: 'Inter-fallback';
+  src: local('Arial'), local('Helvetica'), local('sans-serif');
+  font-display: swap;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  size-adjust: 100%;
 }
 
 ol,

@@ -7,6 +7,17 @@ import Image from "next/image";
 
 export const revalidate = false; // ISR: 무한 캐시
 
+export const metadata = {
+  title: 'Daily Life',
+  description: 'Follow Yu Gwang Yeong\'s daily life as a Korean fashion model. Behind-the-scenes moments, lifestyle, and personal updates.',
+  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'daily life', 'lifestyle', 'behind the scenes', 'model life'],
+  openGraph: {
+    title: 'Daily Life - Yu Gwang Yeong',
+    description: 'Follow Yu Gwang Yeong\'s daily life as a Korean fashion model. Behind-the-scenes moments, lifestyle, and personal updates.',
+    type: 'website',
+  },
+};
+
 export default async function DailyLife() {
   const session = await getServerSession(authOptions);
   const client = await connectDB;
@@ -56,7 +67,10 @@ export default async function DailyLife() {
         {session && (
           <div className="fixed bottom-10 right-5 sm:right-10">
             <Link href="/WRITE/DAILYLIFE">
-              <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+              <button 
+                className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                aria-label="일상 게시물 작성"
+              >
                 <FaPen size={20} />
               </button>
             </Link>

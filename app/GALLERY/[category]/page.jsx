@@ -8,6 +8,22 @@ import Image from "next/image";
 
 export const revalidate = false;
 
+export async function generateMetadata({ params }) {
+  const category = params.category;
+  const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
+  
+  return {
+    title: `${categoryTitle} Gallery`,
+    description: `Explore ${categoryTitle} photography by Korean fashion model Yu Gwang Yeong. Professional modeling portfolio and fashion photography.`,
+    keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'gallery', categoryTitle, 'fashion photography', 'modeling portfolio'],
+    openGraph: {
+      title: `${categoryTitle} Gallery - Yu Gwang Yeong`,
+      description: `Explore ${categoryTitle} photography by Korean fashion model Yu Gwang Yeong. Professional modeling portfolio and fashion photography.`,
+      type: 'website',
+    },
+  };
+}
+
 export default async function Gallery({ params }) {
   const { category } = await params;
 
@@ -57,7 +73,10 @@ export default async function Gallery({ params }) {
         {session && (
           <div className="fixed bottom-10 right-5 sm:right-10">
             <Link href={`/WRITE/GALLERY?category=${category}`}>
-              <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+              <button 
+                className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+                aria-label="갤러리 게시물 작성"
+              >
                 <FaPen size={20} />
               </button>
             </Link>
