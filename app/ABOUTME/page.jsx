@@ -1,12 +1,12 @@
 import { FaPen, FaInstagram, FaYoutube } from "react-icons/fa"; // 아이콘 추가
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 
 export const revalidate = false;
 
-
+  
 export default async function Aboutme() {
   const client = await connectDB;
   const db = client.db("Yu");

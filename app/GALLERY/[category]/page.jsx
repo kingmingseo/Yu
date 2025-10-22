@@ -3,7 +3,7 @@ import { FaPen } from "react-icons/fa";
 import React from "react";
 import { connectDB } from "@/util/database";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/lib/auth";
 import Image from "next/image";
 
 export const revalidate = false;
