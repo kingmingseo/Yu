@@ -5,10 +5,7 @@ import Navigation from "@/components/navigation";
 import Providers from "@/components/provider"
 
 export const metadata = {
-  title: {
-    default: 'Yu Gwang Yeong - Korean Fashion Model',
-    template: '%s | Yu Gwang Yeong'
-  },
+  title: 'Yu',
   description: "Korean fashion model Yu Gwang Yeong's official portfolio. Discover her latest work, gallery, daily life, and professional modeling services.",
   keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'fashion portfolio', 'modeling', 'Korea', 'fashion', 'photography'],
   authors: [{ name: 'Yu Gwang Yeong' }],

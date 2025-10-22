@@ -6,16 +6,6 @@ import Link from "next/link";
 
 export const revalidate = false;
 
-export const metadata = {
-  title: 'About Me',
-  description: 'Korean fashion model Yu Gwang Yeong - Learn about my journey, experience, and passion for fashion modeling.',
-  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'about me', 'model biography', 'fashion model profile'],
-  openGraph: {
-    title: 'About Me - Yu Gwang Yeong',
-    description: 'Korean fashion model Yu Gwang Yeong - Learn about my journey, experience, and passion for fashion modeling.',
-    type: 'profile',
-  },
-};
 
 export default async function Aboutme() {
   const client = await connectDB;

@@ -7,16 +7,6 @@ import Image from "next/image";
 
 export const revalidate = false; // ISR: 무한 캐시
 
-export const metadata = {
-  title: 'Daily Life',
-  description: 'Follow Yu Gwang Yeong\'s daily life as a Korean fashion model. Behind-the-scenes moments, lifestyle, and personal updates.',
-  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'daily life', 'lifestyle', 'behind the scenes', 'model life'],
-  openGraph: {
-    title: 'Daily Life - Yu Gwang Yeong',
-    description: 'Follow Yu Gwang Yeong\'s daily life as a Korean fashion model. Behind-the-scenes moments, lifestyle, and personal updates.',
-    type: 'website',
-  },
-};
 
 export default async function DailyLife() {
   const session = await getServerSession(authOptions);
