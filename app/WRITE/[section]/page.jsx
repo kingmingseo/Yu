@@ -162,11 +162,6 @@ export default function WritePage() {
       return;
     }
 
-    if (contentImageUrls.length === 0) {
-      alert("내용 이미지를 최소 하나 업로드해주세요.");
-      setIsPosting(false);
-      return;
-    }
 
     // 동적 API 엔드포인트 생성
     const apiEndpoint =
