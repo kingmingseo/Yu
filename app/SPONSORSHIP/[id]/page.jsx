@@ -11,13 +11,11 @@ export const revalidate = false; // ISR: 무한 캐시
 
 export default async function Detail({ params }) {
   const { id } = await params; // Next.js 15+ params handling
-
+  
   const session = await getServerSession(authOptions);
   const client = await connectDB;
   const db = client.db("Yu");
-  const data = await db
-    .collection("sponsorship")
-    .findOne({ _id: new ObjectId(id) });
+  const data = await db.collection("sponsorship").findOne({ _id: new ObjectId(id) });
 
   return (
     <>
@@ -56,7 +54,7 @@ export default async function Detail({ params }) {
       {session && (
         <div className="flex gap-2 fixed bottom-10 right-5 sm:right-10">
           <Link href={`/SPONSORSHIP/${id}/update`}>
-            <button
+            <button 
               className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
               aria-label="후원 게시물 편집"
             >

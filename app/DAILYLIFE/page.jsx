@@ -1,6 +1,6 @@
 import { FaPen } from "react-icons/fa";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import Image from "next/image";

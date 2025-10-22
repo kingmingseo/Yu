@@ -1,24 +1,23 @@
-import { revalidatePath } from "next/cache";
-import { NextResponse } from "next/server";
+import { revalidatePath } from 'next/cache';
 
 export async function POST(request) {
   try {
     const { path } = await request.json();
+    
+    if (!path) {
+      return Response.json({ message: 'Path is required' }, { status: 400 });
+    }
 
-    // 캐시 무효화
     revalidatePath(path);
-
-    return NextResponse.json({
-      revalidated: true,
-      now: Date.now(),
+    
+    return Response.json({ 
+      message: 'Path revalidated successfully',
+      path: path 
     });
-  } catch (err) {
-    return NextResponse.json(
-      {
-        revalidated: false,
-        error: err.message,
-      },
-      { status: 500 }
-    );
+  } catch (error) {
+    console.error('Error revalidating path:', error);
+    return Response.json({ 
+      message: 'Error revalidating path' 
+    }, { status: 500 });
   }
 }
