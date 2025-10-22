@@ -37,8 +37,9 @@ export default function Navigation() {
   return (
     <>
       <nav
-        className={`z-10 w-full fixed top-0 px-5 sm:px-10 py-6 flex items-center transition-all duration-300 ease-in-out ${isScrolled || menuOpen ? "bg-black" : "bg-transparent"
-          }`}
+        className={`z-10 w-full fixed top-0 px-5 sm:px-10 py-6 flex items-center transition-all duration-300 ease-in-out ${
+          isScrolled || menuOpen ? "bg-black" : "bg-transparent"
+        }`}
       >
         {/* 모바일에서 햄버거 버튼 */}
         <div className="sm:hidden absolute left-5">
@@ -48,7 +49,10 @@ export default function Navigation() {
         </div>
 
         {/* 로고는 모바일에서도 항상 중앙에 위치 */}
-        <Link className="text-3xl sm:text-6xl font-regular font-brygada text-white mx-auto" href="/">
+        <Link
+          className="text-3xl sm:text-6xl font-regular font-brygada text-white mx-auto"
+          href="/"
+        >
           Yu
         </Link>
 
@@ -88,8 +92,9 @@ export default function Navigation() {
 
         {/* 모바일에서 메뉴 열릴 때 표시되는 부분 */}
         <div
-          className={`sm:hidden ${menuOpen ? "block" : "hidden"
-            } absolute top-20 left-0 w-full bg-black text-white p-5`}
+          className={`sm:hidden ${
+            menuOpen ? "block" : "hidden"
+          } absolute top-20 left-0 w-full bg-black text-white p-5`}
         >
           <Link
             className="block text-lg py-2 hover:text-gray-400"
@@ -126,38 +131,46 @@ export default function Navigation() {
           >
             CONTACT
           </Link>
-          <Link
-            className="block text-lg py-2 hover:text-gray-400"
-            href="#"
-            onClick={(e) => {
-              e.preventDefault(); // 링크의 기본 동작을 막습니다.
-              closeMenu(); // 메뉴 닫기
-              if (session.status === "authenticated") {
-                signOut({ callbackUrl: "/" }); // 로그아웃 후 홈 페이지로 리디렉션
-              } else {
-                window.location.href = "/api/auth/signin"; // 로그인 페이지로 리디렉션
-              }
-            }}
-          >
-            {session.status === "authenticated" ? "LOGOUT" : "LOGIN"}
-          </Link>
+          {session.status === "authenticated" ? (
+            <Link
+              className="block text-lg py-2 hover:text-gray-400"
+              href="/"
+              onClick={() => {
+                signOut({ callbackUrl: "/" });
+              }}
+            >
+              LOGOUT
+            </Link>
+          ) : (
+            <Link
+              className="block text-lg py-2 hover:text-gray-400"
+              href="/LOGIN"
+              onClick={closeMenu}
+            >
+              LOGIN
+            </Link>
+          )}
         </div>
 
         {/* LOGIN 링크는 데스크탑에서만 보이도록 설정 */}
-        <Link
-          href="#"
-          className="text-sm text-white hover:text-gray-400 font-roboto hidden sm:block"
-          onClick={(e) => {
-            e.preventDefault(); // 기본 동작을 막습니다.
-            if (session.status === "authenticated") {
-              signOut({ callbackUrl: "/" }); // 로그아웃 후 홈 페이지로 리디렉션
-            } else {
-              window.location.href = "/api/auth/signin"; // 로그인 페이지로 리디렉션
-            }
-          }}
-        >
-          {session.status === "authenticated" ? "LOGOUT" : "LOGIN"}
-        </Link>
+        {session.status === "authenticated" ? (
+          <Link
+            href="/"
+            className="text-sm text-white hover:text-gray-400 font-roboto hidden sm:block"
+            onClick={() => {
+              signOut({ callbackUrl: "/" });
+            }}
+          >
+            LOGOUT
+          </Link>
+        ) : (
+          <Link
+            href="/LOGIN"
+            className="text-sm text-white hover:text-gray-400 font-roboto hidden sm:block"
+          >
+            LOGIN
+          </Link>
+        )}
       </nav>
     </>
   );

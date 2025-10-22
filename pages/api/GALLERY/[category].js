@@ -12,7 +12,6 @@ export default async function handler(request, respond) {
         .find()
         .sort({ _id: -1 })  // _id 기준으로 내림차순 정렬 (최신 데이터가 먼저)
         .toArray();
-      console.log(data);
       respond.status(200).json(data);
     } catch (error) {
       console.error("Database error:", error);

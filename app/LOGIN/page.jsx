@@ -3,7 +3,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation"; // useRouter import
 import InputField from "@/components/common/InputField";
-import Button from "@/components/common/Button";
+import GeneralButton from "@/components/common/GeneralButton";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -60,7 +60,7 @@ export default function Login() {
         {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <div className="text-center mt-10">
-          <Button isLoading={isLoading} label="LOGIN" type="submit" />
+          <GeneralButton isLoading={isLoading} label="LOGIN" type="submit" />
         </div>
       </form>
     </div>

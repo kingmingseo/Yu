@@ -1,65 +1,20 @@
-"use client"
-import { useSession } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { FaPen } from "react-icons/fa";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { connectDB } from "@/util/database";
+import { ObjectId } from "mongodb";
+import DeleteButton from "@/components/common/DeleteButton";
 
-import { useEffect, useState } from "react";
-import { FaPen, FaTrash } from "react-icons/fa";
+export const revalidate = false;
 
-export default function Detail() {
-  const [data, setData] = useState(null);
-  let params = usePathname();
-  let paramsTemp = params.split('/');
-  let category = paramsTemp[paramsTemp.length - 2];
-  let id = paramsTemp[paramsTemp.length - 1];
-  const session = useSession();
-  const router = useRouter();
-
-  const getData = async () => {
-    try {
-      const response = await fetch(`/api/GALLERY/${category}/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setData(result);
-      } else {
-        console.error("Failed to fetch data:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const deleteData = async () => {
-    if (confirm("정말로 삭제하시겠습니까?")) {
-      try {
-        const response = await fetch(`/api/GALLERY/${category}/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          alert("성공적으로 삭제되었습니다.");
-          router.push(`/GALLERY/${category}`);
-        } else {
-          alert("삭제에 실패했습니다.");
-        }
-      } catch (error) {
-        console.error("Error deleting data:", error);
-        alert("삭제 중 오류가 발생했습니다.");
-      }
-    }
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+export default async function Detail({ params }) {
+  const { id, category } = await params;
+  const session = await getServerSession(authOptions);
+  const client = await connectDB;
+  const db = client.db("Yu");
+  const data = await db
+    .collection(category.toLowerCase())
+    .findOne({ _id: new ObjectId(id) });
 
   return (
     <>
@@ -73,7 +28,6 @@ export default function Detail() {
           <img
             className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
             src={data.mainImage}
-
           />
         )}
 
@@ -84,7 +38,6 @@ export default function Detail() {
               key={index}
               className="sm:w-3/6 w-full h-full object-cover mb-10 px-5"
               src={image}
-
             />
           ))
         ) : (
@@ -93,19 +46,11 @@ export default function Detail() {
       </div>
       {session && (
         <div className="flex gap-2 fixed bottom-10 right-5 sm:right-10">
-          <button
-            className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-          >
+          <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
             <FaPen size={20} />
           </button>
-          <button
-            className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-            onClick={deleteData}
-          >
-            <FaTrash size={20} />
-          </button>
+          <DeleteButton category={category} id={id} />
         </div>
-
       )}
     </>
   );

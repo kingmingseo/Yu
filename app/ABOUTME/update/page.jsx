@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function AboutMe() {
+export default function AboutMeUpdate() {
   const [intro, setIntro] = useState("");
   const router = useRouter();
   let [src, setSrc] = useState();
@@ -39,6 +39,11 @@ export default function AboutMe() {
 
       if (response.ok) {
         alert("수정이 완료 되었습니다");
+        await fetch("/api/revalidate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: "/ABOUTME" }),
+        });
         router.push("/ABOUTME");
       } else {
         alert("알수없는 오류 [수정 실패].");
@@ -76,23 +81,25 @@ export default function AboutMe() {
             onChange={async (e) => {
               let file = e.target.files[0];
               let filename = encodeURIComponent(file.name);
-              let res = await fetch('/api/image?file=' + filename);
+              let res = await fetch("/api/image?file=" + filename);
               res = await res.json();
-              
+
               const formData = new FormData();
-              Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
-                formData.append(key, value);
-              });
+              Object.entries({ ...res.fields, file }).forEach(
+                ([key, value]) => {
+                  formData.append(key, value);
+                }
+              );
               let 업로드결과 = await fetch(res.url, {
-                method: 'POST',
+                method: "POST",
                 body: formData,
               });
               console.log(업로드결과);
 
               if (업로드결과.ok) {
-                setSrc(업로드결과.url + '/' + filename);
+                setSrc(업로드결과.url + "/" + filename);
               } else {
-                console.log('실패');
+                console.log("실패");
               }
             }}
           />
@@ -101,7 +108,10 @@ export default function AboutMe() {
       <div className="flex flex-col justify-start sm:ml-14 pl-5 pr-5 sm:mr-14">
         <div className="flex flex-row">
           <h1 className="text-2xl sm:text-4xl font-semibold text-white">
-            Yu Gwang Yeong <span className="text-sm sm:text-lg font-extralight ml-2">Fashion Model</span>
+            Yu Gwang Yeong{" "}
+            <span className="text-sm sm:text-lg font-extralight ml-2">
+              Fashion Model
+            </span>
           </h1>
         </div>
         <textarea
