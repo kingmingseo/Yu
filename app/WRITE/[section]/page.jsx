@@ -162,12 +162,17 @@ export default function WritePage() {
       return;
     }
 
+    // 업로드 중인 이미지가 있는지 확인
+    if (isContentImagesUploading) {
+      alert("컨텐츠 이미지 업로드가 완료될 때까지 기다려주세요.");
+      setIsPosting(false);
+      return;
+    }
 
-    // 동적 API 엔드포인트 생성
-    const apiEndpoint =
-      section === "GALLERY"
-        ? `/api/GALLERY/${category}`
-        : `/api/${section}/${section.toLowerCase()}`;
+
+    // 통합 POST API 엔드포인트 생성
+    const collection = section === "GALLERY" ? category.toLowerCase() : section.toLowerCase();
+    const apiEndpoint = `/api/post/${collection}`;
 
     // 동적 리다이렉트 경로 생성
     const redirectPath =
@@ -288,7 +293,7 @@ export default function WritePage() {
           htmlFor="content-images"
           className="block text-sm font-medium mb-1"
         >
-          Content Picture
+          Content Picture (선택사항)
           {isContentImagesUploading && (
             <span className="ml-2 text-yellow-400">업로드 중...</span>
           )}
