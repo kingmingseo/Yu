@@ -15,6 +15,10 @@ export default function WritePage() {
   const [isMainImageUploading, setIsMainImageUploading] = useState(false);
   const [isContentImagesUploading, setIsContentImagesUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  
+  // 업로드 취소를 위한 AbortController
+  const [mainImageAbortController, setMainImageAbortController] = useState(null);
+  const [contentImagesAbortController, setContentImagesAbortController] = useState(null);
 
   // 동적 라우팅 파라미터 가져오기
   const params = useParams();
@@ -27,6 +31,15 @@ export default function WritePage() {
   const handleMainImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 기존 업로드 취소
+      if (mainImageAbortController) {
+        mainImageAbortController.abort();
+      }
+      
+      // 새로운 AbortController 생성
+      const abortController = new AbortController();
+      setMainImageAbortController(abortController);
+      
       // 미리보기용 URL 생성
       setMainImage(URL.createObjectURL(file));
       
@@ -36,7 +49,9 @@ export default function WritePage() {
       // S3 업로드 로직
       try {
         const filename = encodeURIComponent(file.name);
-        let res = await fetch("/api/image?file=" + filename);
+        let res = await fetch("/api/image?file=" + filename, {
+          signal: abortController.signal
+        });
         res = await res.json();
 
         const formData = new FormData();
@@ -47,6 +62,7 @@ export default function WritePage() {
         let uploadResult = await fetch(res.url, {
           method: "POST",
           body: formData,
+          signal: abortController.signal
         });
 
         if (uploadResult.ok) {
@@ -56,11 +72,16 @@ export default function WritePage() {
           alert("이미지 업로드에 실패했습니다.");
         }
       } catch (error) {
-        console.error("Error uploading image:", error);
-        alert("이미지 업로드 중 오류가 발생했습니다.");
+        if (error.name === 'AbortError') {
+          console.log("메인 이미지 업로드가 취소되었습니다.");
+        } else {
+          console.error("Error uploading image:", error);
+          alert("이미지 업로드 중 오류가 발생했습니다.");
+        }
       } finally {
         // 로딩 종료
         setIsMainImageUploading(false);
+        setMainImageAbortController(null);
       }
     }
   };
@@ -70,6 +91,15 @@ export default function WritePage() {
     const newImages = files.map((file) => URL.createObjectURL(file));
     setContentImages((prev) => [...prev, ...newImages]);
 
+    // 기존 업로드 취소
+    if (contentImagesAbortController) {
+      contentImagesAbortController.abort();
+    }
+    
+    // 새로운 AbortController 생성
+    const abortController = new AbortController();
+    setContentImagesAbortController(abortController);
+
     // 로딩 시작
     setIsContentImagesUploading(true);
 
@@ -77,7 +107,9 @@ export default function WritePage() {
       const uploadedUrls = await Promise.all(
         files.map(async (file) => {
           const filename = encodeURIComponent(file.name);
-          let res = await fetch("/api/image?file=" + filename);
+          let res = await fetch("/api/image?file=" + filename, {
+            signal: abortController.signal
+          });
           res = await res.json();
 
           const formData = new FormData();
@@ -88,6 +120,7 @@ export default function WritePage() {
           let uploadResult = await fetch(res.url, {
             method: "POST",
             body: formData,
+            signal: abortController.signal
           });
 
           if (uploadResult.ok) {
@@ -99,11 +132,16 @@ export default function WritePage() {
 
       setContentImageUrls((prev) => [...prev, ...uploadedUrls]);
     } catch (error) {
-      console.error("Error uploading images:", error);
-      alert("이미지 업로드 중 오류가 발생했습니다.");
+      if (error.name === 'AbortError') {
+        console.log("컨텐츠 이미지 업로드가 취소되었습니다.");
+      } else {
+        console.error("Error uploading images:", error);
+        alert("이미지 업로드 중 오류가 발생했습니다.");
+      }
     } finally {
       // 로딩 종료
       setIsContentImagesUploading(false);
+      setContentImagesAbortController(null);
     }
   };
 
@@ -229,13 +267,19 @@ export default function WritePage() {
                 </div>
               )}
               <div
-                className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
+                  isMainImageUploading ? 'cursor-not-allowed' : 'cursor-pointer'
+                }`}
                 onClick={(e) => {
                   e.preventDefault();
-                  setMainImage(null); // 메인 이미지 제거
+                  if (!isMainImageUploading) {
+                    setMainImage(null); // 메인 이미지 제거
+                  }
                 }}
               >
-                <span className="text-white">Click to Remove</span>
+                <span className="text-white">
+                  {isMainImageUploading ? "업로드 중..." : "Click to Remove"}
+                </span>
               </div>
             </div>
           ) : (
@@ -286,15 +330,21 @@ export default function WritePage() {
                 </div>
               )}
               <div
-                className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
+                  isContentImagesUploading ? 'cursor-not-allowed' : 'cursor-pointer'
+                }`}
                 onClick={() => {
-                  setContentImages(contentImages.filter((_, i) => i !== index));
-                  setContentImageUrls(
-                    contentImageUrls.filter((_, i) => i !== index)
-                  );
+                  if (!isContentImagesUploading) {
+                    setContentImages(contentImages.filter((_, i) => i !== index));
+                    setContentImageUrls(
+                      contentImageUrls.filter((_, i) => i !== index)
+                    );
+                  }
                 }}
               >
-                <span className="text-white text-center">Click to Remove</span>
+                <span className="text-white text-center">
+                  {isContentImagesUploading ? "업로드 중..." : "Click to Remove"}
+                </span>
               </div>
             </div>
           ))}

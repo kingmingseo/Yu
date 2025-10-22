@@ -1,43 +1,16 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { FaPen } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { connectDB } from "@/util/database";
 import Link from "next/link";
 
-export default function DailyLife() {
-  const router = useRouter();
-  const { data: session } = useSession();
-  const [data, setData] = useState();
+export const revalidate = false; // ISR: 무한 캐시
 
-  const writeNewPost = () => {
-    router.push(`/WRITE/DAILYLIFE`);
-  };
-
-  const getData = async () => {
-    try {
-      const response = await fetch(`/api/DAILYLIFE/dailylife`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        setData(result);
-      } else {
-        console.error("Failed to fetch intro:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching intro:", error);
-    }
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
+export default async function DailyLife() {
+  const session = await getServerSession(authOptions);
+  const client = await connectDB;
+  const db = client.db("Yu");
+  const data = await db.collection("dailylife").find().sort({ _id: -1 }).toArray();
 
   return (
     <div className="grid grid-cols-7 gap-4 px-4 sm:px-0">
@@ -79,12 +52,11 @@ export default function DailyLife() {
 
         {session && (
           <div className="fixed bottom-10 right-5 sm:right-10">
-            <button
-              onClick={writeNewPost}
-              className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-            >
-              <FaPen size={20} />
-            </button>
+            <Link href="/WRITE/DAILYLIFE">
+              <button className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
+                <FaPen size={20} />
+              </button>
+            </Link>
           </div>
         )}
       </div>

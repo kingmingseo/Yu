@@ -3,12 +3,22 @@
 import { useRouter } from "next/navigation";
 import { FaTrash } from "react-icons/fa";
 
-export default function DeleteButton({ category, id }) {
+export default function DeleteButton({ category, id, section = "GALLERY" }) {
   const router = useRouter();
   const deleteData = async () => {
     if (confirm("정말로 삭제하시겠습니까?")) {
       try {
-        const response = await fetch(`/api/GALLERY/${category}/${id}`, {
+        // 컬렉션명 결정
+        const collection = section === "DAILYLIFE" 
+          ? "dailylife"
+          : section === "SPONSORSHIP"
+          ? "sponsorship"
+          : category.toLowerCase();
+        
+        // 통합 API 엔드포인트
+        const apiEndpoint = `/api/delete/${collection}/${id}`;
+        
+        const response = await fetch(apiEndpoint, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -16,15 +26,22 @@ export default function DeleteButton({ category, id }) {
         });
 
         if (response.ok) {
+          // 리다이렉트 경로 결정
+          const redirectPath = section === "DAILYLIFE" 
+            ? "/DAILYLIFE" 
+            : section === "SPONSORSHIP"
+            ? "/SPONSORSHIP"
+            : `/GALLERY/${category}`;
+          
           // 캐시 무효화
           await fetch('/api/revalidate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ path: `/GALLERY/${category}` })
+            body: JSON.stringify({ path: redirectPath })
           });
           
           alert("성공적으로 삭제되었습니다.");
-          router.push(`/GALLERY/${category}`);
+          router.push(redirectPath);
         } else {
           alert("삭제에 실패했습니다.");
         }
