@@ -1,14 +1,14 @@
 "use client";
 import GeneralButton from "@/components/common/GeneralButton";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
 
-export default function VideoWritePage() {
+function VideoWriteContent() {
   const [title, setTitle] = useState("");
   const router = useRouter();
   const [mainVideo, setMainVideo] = useState(null); // 미리보기용
   const [mainVideoUrl, setMainVideoUrl] = useState(""); // S3 URL용
-  
+
   // 로딩 상태
   const [isMainVideoUploading, setIsMainVideoUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
@@ -28,11 +28,21 @@ export default function VideoWritePage() {
       }
 
       // 지원하는 영상 포맷 체크 (더 유연하게)
-      const supportedFormats = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo', 'video/avi'];
-      const fileExtension = file.name.toLowerCase().split('.').pop();
-      const supportedExtensions = ['mp4', 'webm', 'ogg', 'mov', 'avi'];
-      
-      if (!supportedFormats.includes(file.type) && !supportedExtensions.includes(fileExtension)) {
+      const supportedFormats = [
+        "video/mp4",
+        "video/webm",
+        "video/ogg",
+        "video/quicktime",
+        "video/x-msvideo",
+        "video/avi",
+      ];
+      const fileExtension = file.name.toLowerCase().split(".").pop();
+      const supportedExtensions = ["mp4", "webm", "ogg", "mov", "avi"];
+
+      if (
+        !supportedFormats.includes(file.type) &&
+        !supportedExtensions.includes(fileExtension)
+      ) {
         alert("지원하는 영상 포맷: MP4, WebM, OGG, MOV, AVI");
         return;
       }
@@ -55,7 +65,7 @@ export default function VideoWritePage() {
 
         let uploadResult = await fetch(res.url, {
           method: "POST",
-          body: formData
+          body: formData,
         });
 
         if (uploadResult.ok) {
@@ -118,12 +128,12 @@ export default function VideoWritePage() {
 
       if (response.ok) {
         // 캐시 무효화
-        await fetch('/api/revalidate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: redirectPath })
+        await fetch("/api/revalidate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: redirectPath }),
         });
-        
+
         alert("글 작성이 완료되었습니다.");
         router.push(redirectPath);
       } else {
@@ -177,7 +187,7 @@ export default function VideoWritePage() {
         <label
           htmlFor="main-video"
           className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 relative ${
-            isMainVideoUploading ? 'opacity-50 cursor-not-allowed' : ''
+            isMainVideoUploading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           {mainVideo ? (
@@ -195,7 +205,7 @@ export default function VideoWritePage() {
               )}
               <div
                 className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isMainVideoUploading ? 'cursor-not-allowed' : 'cursor-pointer'
+                  isMainVideoUploading ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -209,8 +219,10 @@ export default function VideoWritePage() {
                 </span>
               </div>
             </div>
+          ) : isMainVideoUploading ? (
+            "업로드 중..."
           ) : (
-            isMainVideoUploading ? "업로드 중..." : "Upload Main Video (MP4, WebM, OGG, MOV)"
+            "Upload Main Video (MP4, WebM, OGG, MOV)"
           )}
         </label>
       </div>
@@ -222,8 +234,19 @@ export default function VideoWritePage() {
           isLoading={isPosting}
           disabled={isPosting}
         />
-        
       </div>
     </div>
+  );
+}
+
+export default function VideoWritePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-64">Loading...</div>
+      }
+    >
+      <VideoWriteContent />
+    </Suspense>
   );
 }
