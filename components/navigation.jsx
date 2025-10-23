@@ -83,12 +83,6 @@ export default function Navigation() {
           </Link>
           <Link
             className="text-lg font-semibold text-white hover:text-gray-400 font-roboto"
-            href="/DAILYLIFE"
-          >
-            DAILYLIFE
-          </Link>
-          <Link
-            className="text-lg font-semibold text-white hover:text-gray-400 font-roboto"
             href="/CONTACT"
           >
             CONTACT
