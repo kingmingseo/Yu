@@ -9,7 +9,7 @@ export async function POST(request) {
 
   try {
     // Nodemailer transporter 설정
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: "gmail", 
       auth: {
         user: process.env.EMAIL_USER, // 환경 변수에서 이메일 주소
