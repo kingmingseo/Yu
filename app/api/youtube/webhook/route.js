@@ -195,10 +195,18 @@ export async function GET(request) {
   const challenge = request.nextUrl.searchParams.get('hub.challenge');
   const verifyToken = request.nextUrl.searchParams.get('hub.verify_token');
   
+  console.log('GET 요청 수신 - mode:', mode);
+  console.log('GET 요청 수신 - challenge:', challenge);
+  console.log('GET 요청 수신 - verifyToken:', verifyToken);
+  console.log('GET 요청 수신 - 환경변수 토큰:', process.env.YOUTUBE_VERIFY_TOKEN);
+  console.log('GET 요청 수신 - 토큰 일치 여부:', verifyToken === process.env.YOUTUBE_VERIFY_TOKEN);
+  
   if (mode === 'subscribe' && verifyToken === process.env.YOUTUBE_VERIFY_TOKEN) {
+    console.log('YouTube 웹훅 구독 확인 성공');
     return new Response(challenge, { status: 200 });
   }
   
+  console.log('YouTube 웹훅 구독 확인 실패 - 403 반환');
   return new Response('Forbidden', { status: 403 });
 }
 
