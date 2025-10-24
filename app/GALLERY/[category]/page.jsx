@@ -21,12 +21,20 @@ export default async function Gallery({ params }) {
     .toArray();
   const session = await getServerSession(authOptions);
 
+  // MongoDB ObjectId를 문자열로 변환하여 직렬화
+  const serializedData = data.map(item => ({
+    ...item,
+    _id: item._id.toString(),
+    createdAt: item.createdAt ? item.createdAt.toISOString() : null,
+    updatedAt: item.updatedAt ? item.updatedAt.toISOString() : null,
+  }));
+
   return (
     <>
       <div className="px-4 grid grid-cols-2 gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ">
-        {data && data.length > 0 ? (
+        {serializedData && serializedData.length > 0 ? (
           // 게시물이 있을 경우
-          [...data].map((item, index) => (
+          serializedData.map((item, index) => (
             <GalleryItem
               key={index}
               item={item}

@@ -2,14 +2,19 @@
 import GeneralButton from "@/components/common/GeneralButton";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import imageCompression from "browser-image-compression";
+import { uploadSingleImage, uploadMultipleImages } from "@/util/imageUpload";
+import { compressImage } from "@/util/imageCompression";
+import { convertHeicToWebp } from "@/util/heicImageCompression";
+import { isHeicFile } from "@/util/fileTypeDetector";
 
 export default function WritePage() {
   const [title, setTitle] = useState("");
   const router = useRouter();
   const [mainImage, setMainImage] = useState(null); // 미리보기용
+  const [mainImageFile, setMainImageFile] = useState(null); // 파일 객체 저장용
   const [mainImageUrl, setMainImageUrl] = useState(""); // S3 URL용
   const [contentImages, setContentImages] = useState([]); // 미리보기용
+  const [contentImageFiles, setContentImageFiles] = useState([]); // 파일 객체들 저장용
   const [contentImageUrls, setContentImageUrls] = useState([]); // S3 URL용
   
   // 로딩 상태 추가
@@ -26,132 +31,25 @@ export default function WritePage() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category"); // GALLERY일 때만 사용
 
-  // 이미지 압축 함수
-  const compressImage = async (file) => {
-    const options = {
-      maxSizeMB: 1, // 최대 파일 크기 500KB (더 작게)
-      maxWidthOrHeight: 1920, // 최대 해상도 1920px
-      useWebWorker: false, // 웹 워커 비활성화 (타임아웃 방지)
-      fileType: 'image/webp', // WebP 포맷으로 변환
-      quality: 0.7, // 품질 70% (더 강한 압축)
-      initialQuality: 0.8, // 초기 품질
-      alwaysKeepResolution: false, // 해상도 조정 허용
-    };
 
-    try {
-      // 모든 파일을 압축
-      console.log('이미지 압축 시작...');
-      const compressedFile = await imageCompression(file, options);
-      console.log('압축 전:', file.size, 'bytes');
-      console.log('압축 후:', compressedFile.size, 'bytes');
-      console.log('압축률:', ((1 - compressedFile.size / file.size) * 100).toFixed(1) + '%');
-      return compressedFile;
-    } catch (error) {
-      console.error('이미지 압축 실패:', error);
-      console.log('원본 파일로 진행');
-      return file; // 압축 실패 시 원본 파일 반환
-    }
-  };
-
-  const handleMainImageUpload = async (e) => {
+  const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // 로딩 시작
-      setIsMainImageUploading(true);
-
-      // S3 업로드 로직
-      try {
-        // 이미지 압축
-        const compressedFile = await compressImage(file);
-        
-        // 미리보기용 URL 생성 (압축된 파일로)
-        setMainImage(URL.createObjectURL(compressedFile));
-        
-        const filename = encodeURIComponent(compressedFile.name.replace(/\.[^/.]+$/, ".webp"));
-        let res = await fetch("/api/image?file=" + filename);
-        res = await res.json();
-
-        const formData = new FormData();
-        Object.entries({ ...res.fields, file: compressedFile }).forEach(([key, value]) => {
-          formData.append(key, value);
-        });
-
-        let uploadResult = await fetch(res.url, {
-          method: "POST",
-          body: formData
-        });
-
-        if (uploadResult.ok) {
-          const s3Url = `${uploadResult.url}/${filename}`;
-          setMainImageUrl(s3Url);
-        } else {
-          alert("이미지 업로드에 실패했습니다.");
-        }
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          console.log("메인 이미지 업로드가 취소되었습니다.");
-        } else {
-          console.error("Error uploading image:", error);
-          alert("이미지 업로드 중 오류가 발생했습니다.");
-        }
-      } finally {
-        // 로딩 종료
-        setIsMainImageUploading(false);
-      }
+      // 미리보기용 URL만 생성 (S3 업로드 X)
+      setMainImage(URL.createObjectURL(file));
+      // 파일 객체를 상태에 저장 (Post 시 사용)
+      setMainImageFile(file);
     }
   };
 
-  const handleContentImagesUpload = async (e) => {
+  const handleContentImagesUpload = (e) => {
     const files = Array.from(e.target.files);
 
-    // 로딩 시작
-    setIsContentImagesUploading(true);
-
-    try {
-      // 모든 파일을 압축
-      const compressedFiles = await Promise.all(
-        files.map(file => compressImage(file))
-      );
-      
-      // 미리보기용 URL 생성 (압축된 파일들로)
-      const newImages = compressedFiles.map(file => URL.createObjectURL(file));
-      setContentImages(prev => [...prev, ...newImages]);
-
-      const uploadedUrls = await Promise.all(
-        compressedFiles.map(async (file) => {
-          const filename = encodeURIComponent(file.name.replace(/\.[^/.]+$/, ".webp"));
-          let res = await fetch("/api/image?file=" + filename);
-          res = await res.json();
-
-          const formData = new FormData();
-          Object.entries({ ...res.fields, file }).forEach(([key, value]) => {
-            formData.append(key, value);
-          });
-
-          let uploadResult = await fetch(res.url, {
-            method: "POST",
-            body: formData
-          });
-
-          if (uploadResult.ok) {
-            return `${uploadResult.url}/${filename}`;
-          }
-          throw new Error("업로드 실패");
-        })
-      );
-
-      setContentImageUrls((prev) => [...prev, ...uploadedUrls]);
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        console.log("컨텐츠 이미지 업로드가 취소되었습니다.");
-      } else {
-        console.error("Error uploading images:", error);
-        alert("이미지 업로드 중 오류가 발생했습니다.");
-      }
-    } finally {
-      // 로딩 종료
-      setIsContentImagesUploading(false);
-    }
+    // 미리보기용 URL만 생성 (S3 업로드 X)
+    const newImages = files.map(file => URL.createObjectURL(file));
+    setContentImages(prev => [...prev, ...newImages]);
+    // 파일 객체들을 상태에 저장 (Post 시 사용)
+    setContentImageFiles(prev => [...prev, ...files]);
   };
 
   const postData = async () => {
@@ -165,32 +63,58 @@ export default function WritePage() {
       return;
     }
 
-    if (!mainImageUrl) {
-      alert("메인 이미지를 업로드해주세요.");
+    if (!mainImageFile) {
+      alert("메인 이미지를 선택해주세요.");
       setIsPosting(false);
       return;
     }
 
-    // 업로드 중인 이미지가 있는지 확인
-    if (isContentImagesUploading) {
-      alert("컨텐츠 이미지 업로드가 완료될 때까지 기다려주세요.");
-      setIsPosting(false);
-      return;
-    }
-
-
-    // 통합 POST API 엔드포인트 생성
-    const collection = section === "GALLERY" ? category.toLowerCase() : section.toLowerCase();
-    const apiEndpoint = `/api/post/${collection}`;
-
-    // 동적 리다이렉트 경로 생성
-    const redirectPath =
-      section === "GALLERY" ? `/GALLERY/${category}` : `/${section}`;
-
-
-
-    // S3 URL을 포함한 데이터 전송
     try {
+      // 메인 이미지 S3 업로드
+      setIsMainImageUploading(true);
+      let processedMainFile;
+      
+      if (isHeicFile(mainImageFile)) {
+        console.log('HEIC 파일 감지, HEIC 압축기 사용');
+        processedMainFile = await convertHeicToWebp(mainImageFile);
+      } else {
+        console.log('일반 이미지 파일, browser-image-compression 사용');
+        processedMainFile = await compressImage(mainImageFile);
+      }
+      
+      const mainImageUrl = await uploadSingleImage(processedMainFile);
+      setIsMainImageUploading(false);
+
+      // 컨텐츠 이미지들 S3 업로드
+      let contentImageUrls = [];
+      if (contentImageFiles.length > 0) {
+        setIsContentImagesUploading(true);
+        
+        const processedContentFiles = await Promise.all(
+          contentImageFiles.map(async (file) => {
+            if (isHeicFile(file)) {
+              console.log('HEIC 파일 감지, HEIC 압축기 사용');
+              return await convertHeicToWebp(file);
+            } else {
+              console.log('일반 이미지 파일, browser-image-compression 사용');
+              return await compressImage(file);
+            }
+          })
+        );
+        
+        contentImageUrls = await uploadMultipleImages(processedContentFiles);
+        setIsContentImagesUploading(false);
+      }
+
+      // 통합 POST API 엔드포인트 생성
+      const collection = section === "GALLERY" ? category.toLowerCase() : section.toLowerCase();
+      const apiEndpoint = `/api/post/${collection}`;
+
+      // 동적 리다이렉트 경로 생성
+      const redirectPath =
+        section === "GALLERY" ? `/GALLERY/${category}` : `/${section}`;
+
+      // S3 URL을 포함한 데이터 전송
       const response = await fetch(apiEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -220,6 +144,8 @@ export default function WritePage() {
     } finally {
       // 로딩 종료
       setIsPosting(false);
+      setIsMainImageUploading(false);
+      setIsContentImagesUploading(false);
     }
   };
 
@@ -283,6 +209,7 @@ export default function WritePage() {
                   e.preventDefault();
                   if (!isMainImageUploading) {
                     setMainImage(null); // 메인 이미지 제거
+                    setMainImageFile(null); // 파일 객체도 제거
                   }
                 }}
               >
@@ -345,9 +272,7 @@ export default function WritePage() {
                 onClick={() => {
                   if (!isContentImagesUploading) {
                     setContentImages(contentImages.filter((_, i) => i !== index));
-                    setContentImageUrls(
-                      contentImageUrls.filter((_, i) => i !== index)
-                    );
+                    setContentImageFiles(contentImageFiles.filter((_, i) => i !== index));
                   }
                 }}
               >

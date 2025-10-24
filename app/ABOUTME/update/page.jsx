@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { generateUniqueFilename } from "@/util/filename";
 
 export default function AboutMeUpdate() {
   const [intro, setIntro] = useState("");
@@ -80,7 +81,8 @@ export default function AboutMeUpdate() {
             className="hidden"
             onChange={async (e) => {
               let file = e.target.files[0];
-              let filename = encodeURIComponent(file.name);
+              const uniqueFilename = generateUniqueFilename(file.name);
+              let filename = encodeURIComponent(uniqueFilename);
               let res = await fetch("/api/image?file=" + filename);
               res = await res.json();
 
