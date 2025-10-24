@@ -118,13 +118,6 @@ export default function Navigation() {
           </Link>
           <Link
             className="block text-lg py-2 hover:text-gray-400"
-            href="/DAILYLIFE"
-            onClick={closeMenu}
-          >
-            DAILYLIFE
-          </Link>
-          <Link
-            className="block text-lg py-2 hover:text-gray-400"
             href="/CONTACT"
             onClick={closeMenu}
           >

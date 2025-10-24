@@ -6,6 +6,8 @@ import { uploadSingleImage, uploadMultipleImages } from "@/util/imageUpload";
 import { compressImage } from "@/util/imageCompression";
 import { convertHeicToWebp } from "@/util/heicImageCompression";
 import { isHeicFile } from "@/util/fileTypeDetector";
+import { useSession } from 'next-auth/react';
+import SessionDebug from '@/components/SessionDebug';
 
 export default function WritePage() {
   const [title, setTitle] = useState("");
@@ -290,6 +292,7 @@ export default function WritePage() {
         onClick={postData}
         isLoading={isPosting || isMainImageUploading || isContentImagesUploading}
       />
+      <SessionDebug />
     </div>
   );
 }
