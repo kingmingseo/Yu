@@ -11,7 +11,6 @@ const options = {
   retryWrites: true, // 쓰기 재시도
   retryReads: true, // 읽기 재시도
   heartbeatFrequencyMS: 10000, // 10초 하트비트
-  serverSelectionRetryDelayMS: 2000, // 2초 재시도 지연
 };
 
 let connectDB;
