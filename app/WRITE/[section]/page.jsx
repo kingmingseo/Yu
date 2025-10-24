@@ -289,7 +289,6 @@ export default function WritePage() {
         onClick={postData}
         isLoading={isPosting || isMainImageUploading || isContentImagesUploading}
       />
-      <SessionDebug />
     </div>
   );
 }
