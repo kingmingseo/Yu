@@ -14,11 +14,25 @@ export default async function Gallery({ params }) {
 
   const client = await connectDB;
   const db = client.db("Yu");
-  const data = await db
-    .collection(category.toLowerCase())
-    .find()
-    .sort({ _id: -1 }) // _id 기준으로 내림차순 정렬 (최신 데이터가 먼저)
-    .toArray();
+  
+  let data;
+  
+  // M/V나 VIDEO 카테고리인 경우 통합 컬렉션에서 가져오기
+  if (category === 'MV' || category === 'VIDEO') {
+    data = await db
+      .collection("youtube_videos")
+      .find({ category: category })
+      .sort({ _id: -1 }) // _id 기준으로 내림차순 정렬 (최신 데이터가 먼저)
+      .toArray();
+  } else {
+    // 다른 카테고리는 기존 방식 유지
+    data = await db
+      .collection(category.toLowerCase())
+      .find()
+      .sort({ _id: -1 })
+      .toArray();
+  }
+  
   const session = await getServerSession(authOptions);
 
   // MongoDB ObjectId를 문자열로 변환하여 직렬화

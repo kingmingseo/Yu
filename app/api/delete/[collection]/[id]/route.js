@@ -16,7 +16,8 @@ export async function DELETE(request, { params }) {
     "mv", 
     "video", 
     "magazine", 
-    "profile"
+    "profile",
+    "youtube_videos"
   ];
   
   if (!validCollections.includes(collection)) {
