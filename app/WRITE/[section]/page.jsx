@@ -6,18 +6,15 @@ import { uploadSingleImage, uploadMultipleImages } from "@/util/imageUpload";
 import { compressImage } from "@/util/imageCompression";
 import { convertHeicToWebp } from "@/util/heicImageCompression";
 import { isHeicFile } from "@/util/fileTypeDetector";
-import { useSession } from 'next-auth/react';
-import SessionDebug from '@/components/SessionDebug';
 
 export default function WritePage() {
   const [title, setTitle] = useState("");
   const router = useRouter();
   const [mainImage, setMainImage] = useState(null); // 미리보기용
   const [mainImageFile, setMainImageFile] = useState(null); // 파일 객체 저장용
-  const [mainImageUrl, setMainImageUrl] = useState(""); // S3 URL용
   const [contentImages, setContentImages] = useState([]); // 미리보기용
   const [contentImageFiles, setContentImageFiles] = useState([]); // 파일 객체들 저장용
-  const [contentImageUrls, setContentImageUrls] = useState([]); // S3 URL용
+  
   
   // 로딩 상태 추가
   const [isMainImageUploading, setIsMainImageUploading] = useState(false);
