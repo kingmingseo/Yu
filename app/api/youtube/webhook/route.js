@@ -6,21 +6,11 @@ export async function POST(request) {
   try {
     const body = await request.text();
     
-    // YouTube에서 보내는 구독 확인 요청 처리
-    if (request.headers.get('x-hub-mode') === 'subscribe') {
-      const challenge = request.nextUrl.searchParams.get('hub.challenge');
-      const topic = request.nextUrl.searchParams.get('hub.topic');
-      const verifyToken = request.nextUrl.searchParams.get('hub.verify_token');
-      
-      // 토큰 검증 (환경변수에서 설정)
-      if (verifyToken === process.env.YOUTUBE_VERIFY_TOKEN) {
-        console.log('YouTube 웹훅 구독 확인됨:', topic);
-        return new Response(challenge, { status: 200 });
-      } else {
-        console.log('YouTube 웹훅 토큰 검증 실패');
-        return new Response('Forbidden', { status: 403 });
-      }
-    }
+    console.log('POST 요청 수신 - 헤더:', Object.fromEntries(request.headers.entries()));
+    console.log('POST 요청 수신 - Body:', body.substring(0, 200));
+    
+    // YouTube에서 보내는 구독 확인 요청 처리 (GET 요청에서 처리됨)
+    // POST 요청은 실제 알림 데이터만 처리
     
     // 실제 알림 데이터 처리
     if (request.headers.get('content-type')?.includes('application/atom+xml')) {
@@ -30,9 +20,14 @@ export async function POST(request) {
       const videoId = extractVideoIdFromXML(body);
       
       if (videoId) {
+        console.log('비디오 ID 추출됨:', videoId);
         // YouTube Data API를 통해 영상 정보 가져오기
         await fetchVideoAndSaveToGallery(videoId);
+      } else {
+        console.log('비디오 ID 추출 실패');
       }
+    } else {
+      console.log('XML 형식이 아닌 요청:', request.headers.get('content-type'));
     }
     
     return NextResponse.json({ success: true });
@@ -55,7 +50,10 @@ function extractVideoIdFromXML(xmlBody) {
 
 // YouTube Data API를 통해 영상 정보 가져와서 갤러리에 저장
 async function fetchVideoAndSaveToGallery(videoId) {
+  let client;
   try {
+    console.log('YouTube 영상 정보 가져오기 시작:', videoId);
+    
     const { google } = await import('googleapis');
     
     // YouTube Data API 클라이언트 설정
@@ -76,8 +74,11 @@ async function fetchVideoAndSaveToGallery(videoId) {
       return;
     }
     
+    console.log('영상 정보 조회 성공:', video.snippet.title);
+    
     // 영상이 속한 재생목록 찾기
     const category = await findVideoCategory(youtube, videoId);
+    console.log('영상 카테고리 결정:', category);
     
     const videoData = {
       title: video.snippet.title,
@@ -95,9 +96,11 @@ async function fetchVideoAndSaveToGallery(videoId) {
       updatedAt: new Date()
     };
     
-    // MongoDB에 저장 (통합 컬렉션)
-    const client = await connectDB;
+    // MongoDB 연결 시도
+    console.log('MongoDB 연결 시도...');
+    client = await connectDB;
     const db = client.db("Yu");
+    console.log('MongoDB 연결 성공');
     
     // 기존 영상 확인
     const existingVideo = await db.collection("youtube_videos").findOne({ videoId });
@@ -131,6 +134,17 @@ async function fetchVideoAndSaveToGallery(videoId) {
     
   } catch (error) {
     console.error('YouTube 영상 정보 가져오기 오류:', error);
+    
+    // MongoDB 연결 오류인 경우 재시도 로직 추가
+    if (error.name === 'MongoNetworkTimeoutError' || error.name === 'MongoServerSelectionError') {
+      console.log('MongoDB 연결 오류 - 재시도 시도...');
+      // 재시도 로직은 나중에 구현
+    }
+  } finally {
+    // 클라이언트 연결 정리 (필요한 경우)
+    if (client) {
+      // MongoDB 클라이언트는 연결 풀을 사용하므로 명시적 종료 불필요
+    }
   }
 }
 
