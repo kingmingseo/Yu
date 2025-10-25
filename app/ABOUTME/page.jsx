@@ -2,7 +2,7 @@ import { FaInstagram, FaYoutube } from "react-icons/fa"; // 아이콘 추가
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import ImageSlider from "@/components/ImageSlider";
-import ShowAboutmeEditButton from "@/components/ShowAboutmeEditButton";
+import AddButton from "@/components/common/AddButton";
 
 export const revalidate = false;
 export const dynamic = 'force-static';
@@ -99,7 +99,7 @@ export default async function Aboutme() {
           </div>
         </div>
       </div>
-      <ShowAboutmeEditButton />
+      <AddButton variant="aboutme" />
     </>
   );
 }
