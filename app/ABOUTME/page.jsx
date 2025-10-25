@@ -83,6 +83,18 @@ export default async function Aboutme() {
                   <p className="text-sm text-gray-400">Hair</p>
                   <p className="text-lg font-extralight">Black</p>
                 </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-400">상의</p>
+                  <p className="text-lg font-extralight">100~106</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-400">하의</p>
+                  <p className="text-lg font-extralight">30</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-400">Eyes</p>
+                  <p className="text-lg font-extralight">Black</p>
+                </div>
               </div>
             </div>
           </div>
