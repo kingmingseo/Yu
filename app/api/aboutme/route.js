@@ -21,14 +21,18 @@ export async function POST(request) {
     // index가 제공된 경우 (개별 이미지 저장/업데이트)
     if (index !== undefined) {
       // 기존 문서가 있는지 확인하고 업데이트 또는 새로 생성
-      const existingDoc = await db.collection("Aboutme").findOne({ index: index });
-      
+      const existingDoc = await db
+        .collection("Aboutme")
+        .findOne({ index: index });
+
       if (existingDoc) {
         // 기존 문서 업데이트 (이미지 대체)
-        await db.collection("Aboutme").updateOne(
-          { index: index },
-          { $set: { intro, src, index, updatedAt: new Date() } }
-        );
+        await db
+          .collection("Aboutme")
+          .updateOne(
+            { index: index },
+            { $set: { intro, src, index, updatedAt: new Date() } }
+          );
         console.log(`Updated existing image at index ${index}`);
       } else {
         // 새 문서 생성
@@ -37,17 +41,10 @@ export async function POST(request) {
           src,
           index,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         });
         console.log(`Created new image at index ${index}`);
       }
-    } else {
-      // 기존 방식 (첫 번째 문서 업데이트)
-      await db.collection("Aboutme").updateMany(
-        {},
-        { $set: { intro, src, updatedAt: new Date() } },
-        { upsert: true }
-      );
     }
 
     return Response.json({ message: "Data updated successfully!" });
@@ -67,17 +64,17 @@ export async function DELETE(request) {
       // 특정 index의 이미지 삭제
       const result = await db.collection("Aboutme").deleteOne({ index: index });
       console.log(`Deleted image at index ${index}, result:`, result);
-      
+
       if (result.deletedCount > 0) {
-        return Response.json({ message: `Image at index ${index} deleted successfully!` });
+        return Response.json({
+          message: `Image at index ${index} deleted successfully!`,
+        });
       } else {
-        return Response.json({ message: `No image found at index ${index}` }, { status: 404 });
+        return Response.json(
+          { message: `No image found at index ${index}` },
+          { status: 404 }
+        );
       }
-    } else {
-      // 모든 이미지 삭제
-      const result = await db.collection("Aboutme").deleteMany({});
-      console.log(`Deleted all images`);
-      return Response.json({ message: "All images deleted successfully!" });
     }
   } catch (error) {
     console.error("Error deleting data:", error);

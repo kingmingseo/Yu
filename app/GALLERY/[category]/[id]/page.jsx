@@ -5,11 +5,17 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import DeleteButton from "@/components/common/DeleteButton";
 import Image from "next/image";
+import { notFound } from "next/navigation";
+import isValidObjectId from "@/util/checkObjectId";
 
 export const revalidate = false;
 
 export default async function Detail({ params }) {
   const { id, category } = await params;
+  if (!isValidObjectId(id)) {
+    return notFound();
+  }
+
   const session = await getServerSession(authOptions);
   const client = await connectDB;
   const db = client.db("Yu");
