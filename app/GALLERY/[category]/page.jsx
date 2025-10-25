@@ -45,7 +45,11 @@ export default async function Gallery({ params }) {
 
   return (
     <>
-      <div className="px-4 grid grid-cols-2 gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ">
+      <div className={`px-4 grid gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ${
+        category === 'MV' || category === 'VIDEO' 
+          ? 'grid-cols-1 sm:grid-cols-2' 
+          : 'grid-cols-2'
+      }`}>
         {serializedData && serializedData.length > 0 ? (
           // 게시물이 있을 경우
           serializedData.map((item, index) => (

@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === 'development') {
   }
   connectDB = global._mongo;
 } else {
-  // 프로덕션 환경에서는 매번 새 연결 생성하지 않고 캐시 사용
+  // 프로덕션 환경에서는 매번 새 연결 생성하지 않고 캐시 유
   if (!global._mongo) {
     global._mongo = new MongoClient(url, options).connect();
   }
