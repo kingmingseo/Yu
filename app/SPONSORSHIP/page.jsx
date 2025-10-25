@@ -1,17 +1,18 @@
-import { FaPen } from "react-icons/fa";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import Image from "next/image";
+import AddButton from "@/components/common/AddButton";
 
 export const revalidate = false; // ISR: 무한 캐시
 
 export default async function Sponsorship() {
-  const session = await getServerSession(authOptions);
   const client = await connectDB;
   const db = client.db("Yu");
-  const data = await db.collection("sponsorship").find().sort({ _id: -1 }).toArray();
+  const data = await db
+    .collection("sponsorship")
+    .find()
+    .sort({ _id: -1 })
+    .toArray();
 
   return (
     <div className="grid grid-cols-7 gap-4 px-4 sm:px-0">
@@ -53,18 +54,7 @@ export default async function Sponsorship() {
           )}
         </div>
 
-        {session && (
-          <div className="fixed bottom-10 right-5 sm:right-10">
-            <Link href="/WRITE/SPONSORSHIP">
-              <button 
-                className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-                aria-label="후원 게시물 작성"
-              >
-                <FaPen size={20} />
-              </button>
-            </Link>
-          </div>
-        )}
+        <AddButton category="SPONSORSHIP" />
       </div>
 
       {/* 우측 빈 1열 (모바일에서는 hidden) */}

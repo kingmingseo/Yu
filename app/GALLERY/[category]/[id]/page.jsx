@@ -1,14 +1,12 @@
-import { FaPen } from "react-icons/fa";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
-import DeleteButton from "@/components/common/DeleteButton";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import isValidObjectId from "@/util/checkObjectId";
+import DeleteButton from "@/components/common/DeleteButton";
 
 export const revalidate = false;
+export const dynamic = 'force-static';
 
 export default async function Detail({ params }) {
   const { id, category } = await params;
@@ -16,7 +14,6 @@ export default async function Detail({ params }) {
     return notFound();
   }
 
-  const session = await getServerSession(authOptions);
   const client = await connectDB;
   const db = client.db("Yu");
   const data = await db
@@ -57,17 +54,7 @@ export default async function Detail({ params }) {
           <></>
         )}
       </div>
-      {session && (
-        <div className="flex gap-2 fixed bottom-10 right-5 sm:right-10">
-          <button
-            className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-            aria-label="갤러리 게시물 편집"
-          >
-            <FaPen size={20} />
-          </button>
-          <DeleteButton category={category} id={id} />
-        </div>
-      )}
+      <DeleteButton category={category} id={id} />
     </>
   );
 }

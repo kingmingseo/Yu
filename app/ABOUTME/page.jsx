@@ -1,17 +1,16 @@
-import { FaPen, FaInstagram, FaYoutube } from "react-icons/fa"; // 아이콘 추가
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { FaInstagram, FaYoutube } from "react-icons/fa"; // 아이콘 추가
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import ImageSlider from "@/components/ImageSlider";
+import ShowAboutmeEditButton from "@/components/ShowAboutmeEditButton";
 
 export const revalidate = false;
+export const dynamic = 'force-static';
 
 export default async function Aboutme() {
   const client = await connectDB;
   const db = client.db("Yu");
   const data = await db.collection("Aboutme").find().toArray();
-  const session = await getServerSession(authOptions);
   console.log(data);
   return (
     <>
@@ -100,19 +99,7 @@ export default async function Aboutme() {
           </div>
         </div>
       </div>
-      {/* session이 있을 때만 버튼 표시 */}
-      {session && (
-        <div className="fixed bottom-10 right-10">
-          <Link href="/ABOUTME/update">
-            <button
-              className="bg-transparent border-2 border-white rounded-full p-3 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
-              aria-label="소개 페이지 편집"
-            >
-              <FaPen size={20} />
-            </button>
-          </Link>
-        </div>
-      )}
+      <ShowAboutmeEditButton />
     </>
   );
 }

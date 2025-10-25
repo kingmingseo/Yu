@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/util/database';
+import { revalidatePath } from 'next/cache';
 
 // YouTube PubSubHubbub 웹훅 처리
 export async function POST(request) {
@@ -131,6 +132,10 @@ async function fetchVideoAndSaveToGallery(videoId) {
         _id: result.insertedId
       });
     }
+
+    // 갤러리 경로 캐시 무효화
+    const routeCategory = category === 'MV' ? 'MV' : 'VIDEO';
+    revalidatePath(`/GALLERY/${routeCategory}`);
     
   } catch (error) {
     console.error('YouTube 영상 정보 가져오기 오류:', error);

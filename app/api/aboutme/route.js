@@ -1,4 +1,5 @@
 import { connectDB } from "@/util/database";
+import { revalidatePath } from 'next/cache';
 
 export async function GET() {
   try {
@@ -47,6 +48,9 @@ export async function POST(request) {
       }
     }
 
+    // ABOUTME 페이지 캐시 무효화
+    revalidatePath('/ABOUTME');
+
     return Response.json({ message: "Data updated successfully!" });
   } catch (error) {
     console.error("Error updating data:", error);
@@ -66,6 +70,8 @@ export async function DELETE(request) {
       console.log(`Deleted image at index ${index}, result:`, result);
 
       if (result.deletedCount > 0) {
+        // ABOUTME 페이지 캐시 무효화
+        revalidatePath('/ABOUTME');
         return Response.json({
           message: `Image at index ${index} deleted successfully!`,
         });

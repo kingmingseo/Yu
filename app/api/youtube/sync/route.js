@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/util/database';
+import { revalidatePath } from 'next/cache';
 
 // 재생목록 기반 동기화 API
 export async function POST(request) {
@@ -44,6 +45,10 @@ export async function POST(request) {
     totalAdded += videoResult.added;
     totalUpdated += videoResult.updated;
     
+    // MV/VIDEO 페이지 캐시 무효화
+    revalidatePath('/GALLERY/MV');
+    revalidatePath('/GALLERY/VIDEO');
+
     return NextResponse.json({
       success: true,
       message: `재생목록 동기화 완료: ${totalAdded}개 추가, ${totalUpdated}개 업데이트`,
