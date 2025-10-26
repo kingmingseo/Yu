@@ -6,17 +6,18 @@ import { revalidatePath } from 'next/cache';
 export async function POST(request) {
   try {
     const body = await request.text();
+    const contentType = request.headers.get('content-type') || '';
     
     console.log('POST 요청 수신 - 헤더:', Object.fromEntries(request.headers.entries()));
-    console.log('POST 요청 수신 - Body:', body.substring(0, 200));
+    console.log('POST 요청 수신 - Content-Type:', contentType);
+    console.log('POST 요청 수신 - Body(앞 200자):', body.substring(0, 200));
     
     // YouTube에서 보내는 구독 확인 요청 처리 (GET 요청에서 처리됨)
     // POST 요청은 실제 알림 데이터만 처리
     
     // 실제 알림 데이터 처리
-    if (request.headers.get('content-type')?.includes('application/atom+xml')) {
-      console.log('YouTube 알림 수신:', body);
-      
+    const isXmlLike = /atom\+xml|application\/xml|text\/xml/i.test(contentType);
+    if (isXmlLike || body.includes('<feed')) {
       // XML 파싱하여 새로운 영상 정보 추출
       const videoId = extractVideoIdFromXML(body);
       
@@ -25,10 +26,10 @@ export async function POST(request) {
         // YouTube Data API를 통해 영상 정보 가져오기
         await fetchVideoAndSaveToGallery(videoId);
       } else {
-        console.log('비디오 ID 추출 실패');
+        console.log('비디오 ID 추출 실패 - 본문에 yt:videoId가 없거나 형식이 다릅니다.');
       }
     } else {
-      console.log('XML 형식이 아닌 요청:', request.headers.get('content-type'));
+      console.log('XML 형식이 아닌 요청으로 판단됨 - Content-Type:', contentType);
     }
     
     return NextResponse.json({ success: true });
@@ -41,8 +42,16 @@ export async function POST(request) {
 // XML에서 비디오 ID 추출
 function extractVideoIdFromXML(xmlBody) {
   try {
-    const videoIdMatch = xmlBody.match(/<yt:videoId>([^<]+)<\/yt:videoId>/);
-    return videoIdMatch ? videoIdMatch[1] : null;
+    // 표준: <yt:videoId>VIDEO_ID</yt:videoId>
+    const videoIdMatch = xmlBody.match(/<yt:videoId>([^<]+)<\/yt:videoId>/i);
+    if (videoIdMatch) return videoIdMatch[1];
+    
+    // 보조: 링크에서 추출 https://www.youtube.com/watch?v=VIDEO_ID
+    const linkMatch = xmlBody.match(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-]{11})/i);
+    if (linkMatch) return linkMatch[1];
+    
+    // tombstone(삭제) 이벤트 등은 스킵
+    return null;
   } catch (error) {
     console.error('XML 파싱 오류:', error);
     return null;
