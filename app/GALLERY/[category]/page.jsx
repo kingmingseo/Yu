@@ -6,19 +6,19 @@ import AddButton from "@/components/common/AddButton";
 
 export const revalidate = false;
 
-export async function generateStaticParams() {
-  const categories = [
-    "LOOKBOOK",
-    "POLAROID",
-    "BEAUTY",
-    "MEDIA",
-    "MV",
-    "VIDEO",
-    "MAGAZINE",
-    "PROFILE",
-  ];
-  return categories.map((category) => ({ category }));
-}
+// export async function generateStaticParams() {
+//   const categories = [
+//     "LOOKBOOK",
+//     "POLAROID",
+//     "BEAUTY",
+//     "MEDIA",
+//     "MV",
+//     "VIDEO",
+//     "MAGAZINE",
+//     "PROFILE",
+//   ];
+//   return categories.map((category) => ({ category }));
+// }
 
 export default async function Gallery({ params }) {
   const { category } = await params;

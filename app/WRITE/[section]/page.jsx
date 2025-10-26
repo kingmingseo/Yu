@@ -193,7 +193,7 @@ export default function WritePage() {
               <img
                 src={mainImage}
                 alt="메인 사진"
-                className="mx-auto max-h-48 object-contain"
+                className="mx-auto max-h-64 w-full object-contain"
               />
               {isMainImageUploading && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -261,7 +261,7 @@ export default function WritePage() {
               <img
                 src={image}
                 alt={`내용 사진 ${index + 1}`}
-                className="w-full h-32 object-cover rounded"
+                className="w-full h-32 object-contain rounded bg-gray-800"
               />
               {isContentImagesUploading && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
