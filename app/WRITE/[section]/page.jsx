@@ -14,13 +14,12 @@ export default function WritePage() {
   const [mainImageFile, setMainImageFile] = useState(null); // 파일 객체 저장용
   const [contentImages, setContentImages] = useState([]); // 미리보기용
   const [contentImageFiles, setContentImageFiles] = useState([]); // 파일 객체들 저장용
-  
-  
+
   // 로딩 상태 추가
   const [isMainImageUploading, setIsMainImageUploading] = useState(false);
-  const [isContentImagesUploading, setIsContentImagesUploading] = useState(false);
+  const [isContentImagesUploading, setIsContentImagesUploading] =
+    useState(false);
   const [isPosting, setIsPosting] = useState(false);
-  
 
   // 동적 라우팅 파라미터 가져오기
   const params = useParams();
@@ -29,7 +28,6 @@ export default function WritePage() {
   // Query Parameter 가져오기 (GALLERY용 category)
   const searchParams = useSearchParams();
   const category = searchParams.get("category"); // GALLERY일 때만 사용
-
 
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
@@ -45,10 +43,10 @@ export default function WritePage() {
     const files = Array.from(e.target.files);
 
     // 미리보기용 URL만 생성 (S3 업로드 X)
-    const newImages = files.map(file => URL.createObjectURL(file));
-    setContentImages(prev => [...prev, ...newImages]);
+    const newImages = files.map((file) => URL.createObjectURL(file));
+    setContentImages((prev) => [...prev, ...newImages]);
     // 파일 객체들을 상태에 저장 (Post 시 사용)
-    setContentImageFiles(prev => [...prev, ...files]);
+    setContentImageFiles((prev) => [...prev, ...files]);
   };
 
   const postData = async () => {
@@ -72,15 +70,15 @@ export default function WritePage() {
       // 메인 이미지 S3 업로드
       setIsMainImageUploading(true);
       let processedMainFile;
-      
+
       if (isHeicFile(mainImageFile)) {
-        console.log('HEIC 파일 감지, HEIC 압축기 사용');
+        console.log("HEIC 파일 감지, HEIC 압축기 사용");
         processedMainFile = await convertHeicToWebp(mainImageFile);
       } else {
-        console.log('일반 이미지 파일, browser-image-compression 사용');
+        console.log("일반 이미지 파일, browser-image-compression 사용");
         processedMainFile = await compressImage(mainImageFile);
       }
-      
+
       const mainImageUrl = await uploadSingleImage(processedMainFile);
       setIsMainImageUploading(false);
 
@@ -88,25 +86,27 @@ export default function WritePage() {
       let contentImageUrls = [];
       if (contentImageFiles.length > 0) {
         setIsContentImagesUploading(true);
-        
+
         const processedContentFiles = await Promise.all(
           contentImageFiles.map(async (file) => {
             if (isHeicFile(file)) {
-              console.log('HEIC 파일 감지, HEIC 압축기 사용');
+              console.log("HEIC 파일 감지, HEIC 압축기 사용");
               return await convertHeicToWebp(file);
             } else {
-              console.log('일반 이미지 파일, browser-image-compression 사용');
+              console.log("일반 이미지 파일, browser-image-compression 사용");
               return await compressImage(file);
             }
           })
         );
-        
+
         contentImageUrls = await uploadMultipleImages(processedContentFiles);
         setIsContentImagesUploading(false);
       }
 
       // 통합 POST API 엔드포인트 생성
-      const collection = section === "GALLERY" ? category.toLowerCase() : section.toLowerCase();
+      const collection =
+        section === "GALLERY" ? category.toLowerCase() : String(section).toLowerCase();
+        
       const apiEndpoint = `/api/post/${collection}`;
 
       // 동적 리다이렉트 경로 생성
@@ -126,12 +126,12 @@ export default function WritePage() {
 
       if (response.ok) {
         // 캐시 무효화
-        await fetch('/api/revalidate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ path: redirectPath })
+        await fetch("/api/revalidate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: redirectPath }),
         });
-        
+
         alert("글 작성이 완료되었습니다.");
         router.push(redirectPath);
       } else {
@@ -185,7 +185,7 @@ export default function WritePage() {
         <label
           htmlFor="main-image"
           className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 relative ${
-            isMainImageUploading ? 'opacity-50 cursor-not-allowed' : ''
+            isMainImageUploading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           {mainImage ? (
@@ -202,7 +202,7 @@ export default function WritePage() {
               )}
               <div
                 className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isMainImageUploading ? 'cursor-not-allowed' : 'cursor-pointer'
+                  isMainImageUploading ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
                 onClick={(e) => {
                   e.preventDefault();
@@ -217,8 +217,10 @@ export default function WritePage() {
                 </span>
               </div>
             </div>
+          ) : isMainImageUploading ? (
+            "업로드 중..."
           ) : (
-            isMainImageUploading ? "업로드 중..." : "Upload Main Picture"
+            "Upload Main Picture"
           )}
         </label>
       </div>
@@ -245,10 +247,12 @@ export default function WritePage() {
         <label
           htmlFor="content-images"
           className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 ${
-            isContentImagesUploading ? 'opacity-50 cursor-not-allowed' : ''
+            isContentImagesUploading ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {isContentImagesUploading ? "업로드 중..." : "UPLOAD YOUR PIC (Multiple Items Can Be Selected)"}
+          {isContentImagesUploading
+            ? "업로드 중..."
+            : "UPLOAD YOUR PIC (Multiple Items Can Be Selected)"}
         </label>
 
         <div className="mt-3 grid grid-cols-3 gap-2">
@@ -266,17 +270,25 @@ export default function WritePage() {
               )}
               <div
                 className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isContentImagesUploading ? 'cursor-not-allowed' : 'cursor-pointer'
+                  isContentImagesUploading
+                    ? "cursor-not-allowed"
+                    : "cursor-pointer"
                 }`}
                 onClick={() => {
                   if (!isContentImagesUploading) {
-                    setContentImages(contentImages.filter((_, i) => i !== index));
-                    setContentImageFiles(contentImageFiles.filter((_, i) => i !== index));
+                    setContentImages(
+                      contentImages.filter((_, i) => i !== index)
+                    );
+                    setContentImageFiles(
+                      contentImageFiles.filter((_, i) => i !== index)
+                    );
                   }
                 }}
               >
                 <span className="text-white text-center">
-                  {isContentImagesUploading ? "업로드 중..." : "Click to Remove"}
+                  {isContentImagesUploading
+                    ? "업로드 중..."
+                    : "Click to Remove"}
                 </span>
               </div>
             </div>
@@ -284,10 +296,13 @@ export default function WritePage() {
         </div>
       </div>
 
-      <GeneralButton 
-        label="Post" 
+      <GeneralButton
+        label="Post"
+        ariaLabel="Post"
         onClick={postData}
-        isLoading={isPosting || isMainImageUploading || isContentImagesUploading}
+        isLoading={
+          isPosting || isMainImageUploading || isContentImagesUploading
+        }
       />
     </div>
   );

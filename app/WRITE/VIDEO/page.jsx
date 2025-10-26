@@ -4,12 +4,12 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import GeneralButton from "@/components/common/GeneralButton";
 import Script from "next/script";
+import getYouTubeToken from "@/util/getYoutubeToken";
 
 function VideoWriteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "VIDEO"; // MV | VIDEO
-
   const [title, setTitle] = useState("");
   const [videoFile, setVideoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -85,6 +85,7 @@ function VideoWriteContent() {
       </div>
       <GeneralButton
         label="Post"
+        ariaLabel="Post"
         onClick={async () => {
           if (!title) {
             alert("제목을 입력해주세요.");
@@ -102,22 +103,7 @@ function VideoWriteContent() {
           setIsUploading(true);
           try {
             // OAuth 토큰 발급
-            const accessToken = await new Promise((resolve, reject) => {
-              if (!window.google?.accounts?.oauth2) {
-                reject(new Error("Google OAuth가 로드되지 않았습니다."));
-                return;
-              }
-              window.google.accounts.oauth2
-                .initTokenClient({
-                  client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-                  scope: "https://www.googleapis.com/auth/youtube.upload",
-                  callback: (resp) => {
-                    if (resp?.access_token) resolve(resp.access_token);
-                    else reject(new Error("액세스 토큰 발급 실패"));
-                  },
-                })
-                .requestAccessToken();
-            });
+            const accessToken = await getYouTubeToken();
 
             // 업로드 메타데이터
             const metadata = {
@@ -154,7 +140,7 @@ function VideoWriteContent() {
             const videoId = json.id;
 
             // 업로드 성공 → 메타 저장 호출
-            const saveRes = await fetch("/api/youtube/import", {
+            const saveRes = await fetch("/api/youtube/upload", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ videoId, category }),
@@ -168,7 +154,9 @@ function VideoWriteContent() {
             await fetch("/api/revalidate", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ path: `/GALLERY/${category.toUpperCase}` }),
+              body: JSON.stringify({
+                path: `/GALLERY/${category.toUpperCase}`,
+              }),
             });
 
             alert("영상이 성공적으로 업로드되었습니다.");
@@ -187,7 +175,13 @@ function VideoWriteContent() {
 
 export default function VideoWritePage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-black text-white">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-black text-white">
+          Loading...
+        </div>
+      }
+    >
       <VideoWriteContent />
     </Suspense>
   );

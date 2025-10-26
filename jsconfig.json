@@ -2,6 +2,17 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"]
-    }
-  }
+    },
+    "checkJs": false,
+    "allowJs": true,
+    "jsx": "preserve",
+    "target": "es2020",
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": ["**/*.js", "**/*.jsx"],
+  "exclude": ["node_modules"]
 }

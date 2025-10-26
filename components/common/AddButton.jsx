@@ -15,7 +15,7 @@ export default function AddButton({ category, variant = 'gallery' }) {
   const href = isAbout
     ? "/ABOUTME/update"
     : isVideoCategory
-      ? `/WRITE/VIDEO?category=${category.toLowerCase()}`
+      ? `/WRITE/VIDEO?category=${category}`
       : `/WRITE/GALLERY?category=${category}`;
 
   const ariaLabel = isAbout

@@ -1,11 +1,11 @@
 import { connectDB } from "@/util/database";
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
     const client = await connectDB;
     const db = client.db("Yu");
-    let intro = await db.collection("Aboutme").find().toArray(); // 데이터 가져오기
+    const intro = await db.collection("Aboutme").find().toArray(); // 데이터 가져오기
     return Response.json(intro); // JSON 형식으로 응답
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -49,7 +49,7 @@ export async function POST(request) {
     }
 
     // ABOUTME 페이지 캐시 무효화
-    revalidatePath('/ABOUTME');
+    revalidatePath("/ABOUTME");
 
     return Response.json({ message: "Data updated successfully!" });
   } catch (error) {
@@ -71,7 +71,7 @@ export async function DELETE(request) {
 
       if (result.deletedCount > 0) {
         // ABOUTME 페이지 캐시 무효화
-        revalidatePath('/ABOUTME');
+        revalidatePath("/ABOUTME");
         return Response.json({
           message: `Image at index ${index} deleted successfully!`,
         });
