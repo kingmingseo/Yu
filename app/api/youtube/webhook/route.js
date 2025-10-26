@@ -196,19 +196,25 @@ async function findVideoCategory(youtube, videoId) {
 
 // GET 요청 처리 (웹훅 구독 확인용)
 export async function GET(request) {
-  const mode = request.nextUrl.searchParams.get('hub.mode');
-  const challenge = request.nextUrl.searchParams.get('hub.challenge');
-  const verifyToken = request.nextUrl.searchParams.get('hub.verify_token');
+  // URL에서 쿼리 직접 파싱 (일부 프록시/플랫폼에서 dot 키 이슈 대응)
+  const url = new URL(request.url);
+  const params = url.searchParams;
   
+  // hub.* 우선, 그 외 대체 키들도 허용
+  const mode = params.get('hub.mode') || params.get('hub_mode') || params.get('mode');
+  const challenge = params.get('hub.challenge') || params.get('hub_challenge') || params.get('challenge');
+  const verifyToken = params.get('hub.verify_token') || params.get('hub_verify_token') || params.get('verify_token') || params.get('verifyToken') || params.get('token');
+  
+  console.log('GET 요청 수신 - URL:', request.url);
   console.log('GET 요청 수신 - mode:', mode);
   console.log('GET 요청 수신 - challenge:', challenge);
   console.log('GET 요청 수신 - verifyToken:', verifyToken);
   console.log('GET 요청 수신 - 환경변수 토큰:', process.env.YOUTUBE_VERIFY_TOKEN);
   console.log('GET 요청 수신 - 토큰 일치 여부:', verifyToken === process.env.YOUTUBE_VERIFY_TOKEN);
   
-  if (mode === 'subscribe' && verifyToken === process.env.YOUTUBE_VERIFY_TOKEN) {
+  if ((mode === 'subscribe' || mode === 'unsubscribe') && verifyToken === process.env.YOUTUBE_VERIFY_TOKEN) {
     console.log('YouTube 웹훅 구독 확인 성공');
-    return new Response(challenge, { status: 200 });
+    return new Response(challenge ?? '', { status: 200, headers: { 'Content-Type': 'text/plain' } });
   }
   
   console.log('YouTube 웹훅 구독 확인 실패 - 403 반환');
