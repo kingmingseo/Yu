@@ -18,8 +18,6 @@ export default function DeleteButton({ category, id, section = "GALLERY" }) {
         const collection =
           section === "SPONSORSHIP"
             ? "sponsorship"
-            : category === "MV" || category === "VIDEO"
-            ? "youtube_videos"
             : category.toLowerCase();
 
         // 통합 API 엔드포인트

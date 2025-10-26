@@ -1,6 +1,6 @@
-import DeleteButton from "@/components/common/DeleteButton";
+import VideoDeleteButton from "@/components/common/VideoDeleteButton";
 
-export default function VideoItem({ item, category, session }) {
+export default function VideoItem({ item, category }) {
   return (
     <div className="relative group w-full flex justify-center">
       <div className="w-5/6 max-w-3xl">
@@ -14,13 +14,12 @@ export default function VideoItem({ item, category, session }) {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
+          {/* 영상 우상단에 삭제 버튼 */}
+          <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10">
+            <VideoDeleteButton category={category} id={item._id} />
+          </div>
         </div>
       </div>
-      {session && (
-        <div className="absolute top-2 right-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity z-10">
-          <DeleteButton category={category} id={item._id} />
-        </div>
-      )}
     </div>
   );
 }

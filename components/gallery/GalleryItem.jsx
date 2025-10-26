@@ -1,13 +1,13 @@
 import VideoItem from "./VideoItem";
 import ImageItem from "./ImageItem";
 
-export default function GalleryItem({ item, category, session }) {
+export default function GalleryItem({ item, category }) {
   const isVideoCategory = category === 'MV' || category === 'VIDEO';
 
   return (
     <div className="flex flex-col w-full h-full justify-center items-center" >
       {isVideoCategory ? (
-        <VideoItem item={item} category={category} session={session} />
+        <VideoItem item={item} category={category} />
       ) : (
         <ImageItem item={item} category={category} />
       )}
