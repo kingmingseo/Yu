@@ -76,7 +76,7 @@ export default async function Aboutme() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-400">3 Size</p>
-                  <p className="text-lg font-extralight">32-37-35</p>
+                  <p className="text-lg font-extralight">32-27-35</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-400">Hair</p>
@@ -84,7 +84,7 @@ export default async function Aboutme() {
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-400">상의</p>
-                  <p className="text-lg font-extralight">100~106</p>
+                  <p className="text-lg font-extralight">100~105</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm text-gray-400">하의</p>
