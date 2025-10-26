@@ -21,7 +21,7 @@ export async function POST(request) {
     
     // PubSubHubbub 구독 요청
     const subscribeUrl = 'https://pubsubhubbub.appspot.com/subscribe';
-    const topicUrl = `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${channelId}`;
+    const topicUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
     
     const subscribeData = new URLSearchParams({
       'hub.callback': webhookUrl,
@@ -76,7 +76,7 @@ export async function DELETE() {
     
     const webhookUrl = `${process.env.NEXTAUTH_URL}/api/youtube/webhook`;
     const verifyToken = process.env.YOUTUBE_VERIFY_TOKEN;
-    const topicUrl = `https://www.youtube.com/xml/feeds/videos.xml?channel_id=${channelId}`;
+    const topicUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
     
     const unsubscribeData = new URLSearchParams({
       'hub.callback': webhookUrl,

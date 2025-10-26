@@ -5,7 +5,13 @@ import { revalidatePath } from 'next/cache';
 // 재생목록 기반 동기화 API
 export async function POST(request) {
   try {
-    const { maxResults = 10 } = await request.json();
+    // 본문이 없거나 JSON이 아닐 수 있어 안전하게 파싱
+    let body = {};
+    try {
+      body = await request.json();
+    } catch (_) {}
+    const rawMax = body?.maxResults;
+    const maxResults = Math.min(50, Math.max(1, Number(rawMax) || 10));
     
     const { google } = await import('googleapis');
     const youtube = google.youtube({
@@ -14,8 +20,8 @@ export async function POST(request) {
     });
     
     // 재생목록 ID들 가져오기
-    const mvPlaylistId = process.env.YOUTUBE_MV_PLAYLIST_ID;
-    const videoPlaylistId = process.env.YOUTUBE_VIDEO_PLAYLIST_ID;
+    const mvPlaylistId = process.env.YOUTUBE_MV_PLAYLIST_ID?.trim();
+    const videoPlaylistId = process.env.YOUTUBE_VIDEO_PLAYLIST_ID?.trim();
     
     if (!mvPlaylistId || !videoPlaylistId) {
       return NextResponse.json({ 
@@ -34,13 +40,13 @@ export async function POST(request) {
     let totalUpdated = 0;
     
     // M/V 재생목록 동기화
-    console.log('M/V 재생목록 동기화 시작...');
+    console.log('M/V 재생목록 동기화 시작...', { mvPlaylistId, maxResults });
     const mvResult = await syncPlaylist(youtube, mvPlaylistId, 'MV', maxResults, db);
     totalAdded += mvResult.added;
     totalUpdated += mvResult.updated;
     
     // VIDEO 재생목록 동기화
-    console.log('VIDEO 재생목록 동기화 시작...');
+    console.log('VIDEO 재생목록 동기화 시작...', { videoPlaylistId, maxResults });
     const videoResult = await syncPlaylist(youtube, videoPlaylistId, 'VIDEO', maxResults, db);
     totalAdded += videoResult.added;
     totalUpdated += videoResult.updated;
