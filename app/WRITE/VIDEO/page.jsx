@@ -13,7 +13,7 @@ function VideoWriteContent() {
   const [title, setTitle] = useState("");
   const [videoFile, setVideoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-
+  
   return (
     <div className="flex flex-col items-center p-5 bg-black min-h-screen text-white max-w-4xl mx-auto">
       {/* Google Identity Services for OAuth token client (YouTube upload) */}

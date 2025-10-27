@@ -22,7 +22,6 @@ export async function generateStaticParams() {
 
 export default async function Gallery({ params }) {
   const { category } = await params;
-
   const client = await connectDB;
   const db = client.db("Yu");
 

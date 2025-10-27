@@ -35,7 +35,7 @@ export default function WritePage() {
       if (mainImage) {
         URL.revokeObjectURL(mainImage);
       }
-      contentImages.forEach(url => {
+      contentImages.forEach((url) => {
         URL.revokeObjectURL(url);
       });
     };
@@ -121,8 +121,10 @@ export default function WritePage() {
 
       // 통합 POST API 엔드포인트 생성
       const collection =
-        section === "GALLERY" ? category.toLowerCase() : String(section).toLowerCase();
-        
+        section === "GALLERY"
+          ? category.toLowerCase()
+          : String(section).toLowerCase();
+
       const apiEndpoint = `/api/post/${collection}`;
 
       // 동적 리다이렉트 경로 생성
