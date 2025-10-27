@@ -3,6 +3,7 @@ import ".//globals.css";
 import MarginWrapper from "@/components/marginwrapper";
 import Navigation from "@/components/navigation";
 import Providers from "@/components/provider"
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata = {
   title: 'Yu',
