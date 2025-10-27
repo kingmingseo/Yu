@@ -49,6 +49,7 @@ export default async function RootLayout({ children }) {
           <Navigation />
           <MarginWrapper>{children}</MarginWrapper> {/* 경로에 따라 마진 처리 */}
           <AudioPlayer />
+          <Analytics />
         </Providers>
       </body>
     </html>
