@@ -1,7 +1,7 @@
 "use client";
 import GeneralButton from "@/components/common/GeneralButton";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { uploadSingleImage, uploadMultipleImages } from "@/util/imageUpload";
 import { compressImage } from "@/util/imageCompression";
 import { convertHeicToWebp } from "@/util/heicImageCompression";
@@ -29,9 +29,25 @@ export default function WritePage() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category"); // GALLERY일 때만 사용
 
+  // 컴포넌트 언마운트 시 메모리 해제
+  useEffect(() => {
+    return () => {
+      if (mainImage) {
+        URL.revokeObjectURL(mainImage);
+      }
+      contentImages.forEach(url => {
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, [mainImage, contentImages]);
+
   const handleMainImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 기존 URL 메모리 해제
+      if (mainImage) {
+        URL.revokeObjectURL(mainImage);
+      }
       // 미리보기용 URL만 생성 (S3 업로드 X)
       setMainImage(URL.createObjectURL(file));
       // 파일 객체를 상태에 저장 (Post 시 사용)
@@ -207,6 +223,8 @@ export default function WritePage() {
                 onClick={(e) => {
                   e.preventDefault();
                   if (!isMainImageUploading) {
+                    // 메인 이미지 URL 메모리 해제
+                    URL.revokeObjectURL(mainImage);
                     setMainImage(null); // 메인 이미지 제거
                     setMainImageFile(null); // 파일 객체도 제거
                   }
@@ -276,6 +294,8 @@ export default function WritePage() {
                 }`}
                 onClick={() => {
                   if (!isContentImagesUploading) {
+                    // 삭제할 이미지 URL 메모리 해제
+                    URL.revokeObjectURL(contentImages[index]);
                     setContentImages(
                       contentImages.filter((_, i) => i !== index)
                     );
