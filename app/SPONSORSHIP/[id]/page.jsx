@@ -1,14 +1,14 @@
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import Image from "next/image";
-import DeleteButton from "@/components/common/DeleteButton";
+import DeleteButton from "@/components/common/DeleteButton/DeleteButtonUI";
 
 export const revalidate = false; // ISR: 무한 캐시
 export const dynamic = 'force-static';
 
 export default async function Detail({ params }) {
   const { id } = await params; // Next.js 15+ params handling
-  
+
   const client = await connectDB;
   const db = client.db("Yu");
   const data = await db.collection("sponsorship").findOne({ _id: new ObjectId(id) });
