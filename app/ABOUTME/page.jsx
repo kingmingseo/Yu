@@ -2,7 +2,7 @@ import { FaInstagram, FaYoutube } from "react-icons/fa"; // 아이콘 추가
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import ImageSlider from "@/components/ImageSlider";
-import AddButton from "@/components/common/AddButton";
+import AddButton from "@/components/common/AddButton/AddButtonContainer";
 
 export const revalidate = false;
 export const dynamic = 'force-static';
@@ -25,9 +25,9 @@ export default async function Aboutme() {
                   const item = data.find((d) => d.index === index);
                   return item
                     ? {
-                        src: item.src,
-                        alt: item.alt || "프로필 이미지",
-                      }
+                      src: item.src,
+                      alt: item.alt || "프로필 이미지",
+                    }
                     : null;
                 }).filter(Boolean)}
                 autoPlay={true}

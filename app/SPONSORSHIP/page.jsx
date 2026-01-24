@@ -1,7 +1,7 @@
 import { connectDB } from "@/util/database";
 import Link from "next/link";
 import Image from "next/image";
-import AddButton from "@/components/common/AddButton";
+import AddButton from "@/components/common/AddButton/AddButtonContainer";
 
 export const revalidate = false; // ISR: 무한 캐시
 

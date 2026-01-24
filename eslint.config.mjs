@@ -17,7 +17,7 @@ const eslintConfig = [...compat.extends("next/core-web-vitals"), {
     "no-undef": "error", // 정의되지 않은 변수/함수 사용 시 에러
     "no-unused-vars": "warn", // 사용되지 않은 변수 경고
     "no-unreachable": "error", // 도달할 수 없는 코드 에러
-    "no-console": "warn", // console 사용 시 경고
+    "no-console": "off", // console 사용 시 경고
     "prefer-const": "error", // let 대신 const 사용 권장
     "no-var": "error", // var 사용 금지
   },

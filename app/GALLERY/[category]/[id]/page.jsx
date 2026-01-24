@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import isValidObjectId from "@/util/checkObjectId";
-import DeleteButton from "@/components/common/DeleteButton";
+import DeleteButtonContainer from "@/components/common/DeleteButton/DeleteButtonContainer";
 
 export const revalidate = false;
 export const dynamic = 'force-static';
@@ -54,7 +54,7 @@ export default async function Detail({ params }) {
           <></>
         )}
       </div>
-      <DeleteButton category={category} id={id} />
+      <DeleteButtonContainer category={category} id={id} />
     </>
   );
 }

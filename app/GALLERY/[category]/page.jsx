@@ -2,7 +2,7 @@ import React from "react";
 import { connectDB } from "@/util/database";
 import GalleryItem from "@/components/gallery/GalleryItem";
 import EmptyState from "@/components/gallery/EmptyState";
-import AddButton from "@/components/common/AddButton";
+import AddButtonContainer from "@/components/common/AddButton/AddButtonContainer";
 
 export const revalidate = false;
 
@@ -55,11 +55,10 @@ export default async function Gallery({ params }) {
     <>
       {/* 비디오나 MV카테고리인 경우 모바일에서는 1열로 보여주고 데스크탑은 기존2열 유지 */}
       <div
-        className={`px-4 grid gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ${
-          category === "MV" || category === "VIDEO"
-            ? "grid-cols-1 sm:grid-cols-2"
-            : "grid-cols-2"
-        }`}
+        className={`px-4 grid gap-x-6 sm:gap-y-32 gap-y-16 pb-32 sm:mt-10 mt-5 justify-between ${category === "MV" || category === "VIDEO"
+          ? "grid-cols-1 sm:grid-cols-2"
+          : "grid-cols-2"
+          }`}
       >
         {serializedData && serializedData.length > 0 ? (
           // 게시물이 있을 경우
@@ -70,7 +69,7 @@ export default async function Gallery({ params }) {
           // 게시물이 없을 경우
           <EmptyState />
         )}
-        <AddButton category={category} />
+        <AddButtonContainer category={category} />
       </div>
     </>
   );
