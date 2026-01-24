@@ -1,33 +1,28 @@
 "use client";
 import GeneralButton from "@/components/common/GeneralButton";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { usePostContent } from "@/app/hooks/usePostContent";
 import { useState, useEffect } from "react";
-import { uploadSingleImage, uploadMultipleImages } from "@/util/imageUpload";
-import { compressImage } from "@/util/imageCompression";
-import { convertHeicToWebp } from "@/util/heicImageCompression";
-import { isHeicFile } from "@/util/fileTypeDetector";
 
 export default function WritePage() {
   const [title, setTitle] = useState("");
-  const router = useRouter();
-  const [mainImage, setMainImage] = useState(null); // 미리보기용
-  const [mainImageFile, setMainImageFile] = useState(null); // 파일 객체 저장용
-  const [contentImages, setContentImages] = useState([]); // 미리보기용
-  const [contentImageFiles, setContentImageFiles] = useState([]); // 파일 객체들 저장용
-
-  // 로딩 상태 추가
-  const [isMainImageUploading, setIsMainImageUploading] = useState(false);
-  const [isContentImagesUploading, setIsContentImagesUploading] =
-    useState(false);
-  const [isPosting, setIsPosting] = useState(false);
-
   // 동적 라우팅 파라미터 가져오기
   const params = useParams();
   const section = params.section;
-
-  // Query Parameter 가져오기 (GALLERY용 category)
+  
+  // Query Parameter 가져오기
   const searchParams = useSearchParams();
-  const category = searchParams.get("category"); // GALLERY일 때만 사용
+  const category = searchParams.get("category"); 
+  const id = searchParams.get("id"); 
+
+  //미리보기용 이미지 
+  const [mainImage, setMainImage] = useState(null);
+  const [contentImages, setContentImages] = useState([]);
+
+  const { postData, isPosting, isMainImageUploading, isContentImagesUploading, contentImageFiles, mainImageFile,setContentImageFiles, setMainImageFile } = usePostContent({ section, action: "create", category, id, title });
+
+
+  
 
   // 컴포넌트 언마운트 시 메모리 해제
   useEffect(() => {
@@ -65,106 +60,6 @@ export default function WritePage() {
     setContentImageFiles((prev) => [...prev, ...files]);
   };
 
-  const postData = async () => {
-    // 로딩 시작
-    setIsPosting(true);
-
-    // 입력값 검증
-    if (!title) {
-      alert("제목을 입력해주세요.");
-      setIsPosting(false);
-      return;
-    }
-
-    if (!mainImageFile) {
-      alert("메인 이미지를 선택해주세요.");
-      setIsPosting(false);
-      return;
-    }
-
-    try {
-      // 메인 이미지 S3 업로드
-      setIsMainImageUploading(true);
-      let processedMainFile;
-
-      if (isHeicFile(mainImageFile)) {
-        console.log("HEIC 파일 감지, HEIC 압축기 사용");
-        processedMainFile = await convertHeicToWebp(mainImageFile);
-      } else {
-        console.log("일반 이미지 파일, browser-image-compression 사용");
-        processedMainFile = await compressImage(mainImageFile);
-      }
-
-      const mainImageUrl = await uploadSingleImage(processedMainFile);
-      setIsMainImageUploading(false);
-
-      // 컨텐츠 이미지들 S3 업로드
-      let contentImageUrls = [];
-      if (contentImageFiles.length > 0) {
-        setIsContentImagesUploading(true);
-
-        const processedContentFiles = await Promise.all(
-          contentImageFiles.map(async (file) => {
-            if (isHeicFile(file)) {
-              console.log("HEIC 파일 감지, HEIC 압축기 사용");
-              return await convertHeicToWebp(file);
-            } else {
-              console.log("일반 이미지 파일, browser-image-compression 사용");
-              return await compressImage(file);
-            }
-          })
-        );
-
-        contentImageUrls = await uploadMultipleImages(processedContentFiles);
-        setIsContentImagesUploading(false);
-      }
-
-      // 통합 POST API 엔드포인트 생성
-      const collection =
-        section === "GALLERY"
-          ? category.toLowerCase()
-          : String(section).toLowerCase();
-
-      const apiEndpoint = `/api/post/${collection}`;
-
-      // 동적 리다이렉트 경로 생성
-      const redirectPath =
-        section === "GALLERY" ? `/GALLERY/${category}` : `/${section}`;
-
-      // S3 URL을 포함한 데이터 전송
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          mainImage: mainImageUrl,
-          contentImages: contentImageUrls,
-        }),
-      });
-
-      if (response.ok) {
-        // 캐시 무효화
-        await fetch("/api/revalidate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ path: redirectPath }),
-        });
-
-        alert("글 작성이 완료되었습니다.");
-        router.push(redirectPath);
-      } else {
-        alert("알 수 없는 오류 [글 작성 실패].");
-      }
-    } catch (error) {
-      console.error("Error posting data:", error);
-      alert("데이터 전송 중 오류가 발생했습니다.");
-    } finally {
-      // 로딩 종료
-      setIsPosting(false);
-      setIsMainImageUploading(false);
-      setIsContentImagesUploading(false);
-    }
-  };
 
   return (
     <div className="flex flex-col items-center p-5 bg-black min-h-screen text-white max-w-4xl mx-auto">
@@ -202,9 +97,8 @@ export default function WritePage() {
         />
         <label
           htmlFor="main-image"
-          className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 relative ${
-            isMainImageUploading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 relative ${isMainImageUploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {mainImage ? (
             <div className="relative group">
@@ -219,9 +113,8 @@ export default function WritePage() {
                 </div>
               )}
               <div
-                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isMainImageUploading ? "cursor-not-allowed" : "cursor-pointer"
-                }`}
+                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${isMainImageUploading ? "cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 onClick={(e) => {
                   e.preventDefault();
                   if (!isMainImageUploading) {
@@ -266,9 +159,8 @@ export default function WritePage() {
         />
         <label
           htmlFor="content-images"
-          className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 ${
-            isContentImagesUploading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`block w-full border border-dashed border-gray-500 rounded p-5 text-center cursor-pointer hover:bg-gray-800 ${isContentImagesUploading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {isContentImagesUploading
             ? "업로드 중..."
@@ -289,11 +181,10 @@ export default function WritePage() {
                 </div>
               )}
               <div
-                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isContentImagesUploading
-                    ? "cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
+                className={`absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity ${isContentImagesUploading
+                  ? "cursor-not-allowed"
+                  : "cursor-pointer"
+                  }`}
                 onClick={() => {
                   if (!isContentImagesUploading) {
                     // 삭제할 이미지 URL 메모리 해제

@@ -46,3 +46,6 @@ videos/*
 !videos/*.js
 !videos/*.ts
 public/_next-video
+
+*storybook.log
+storybook-static
