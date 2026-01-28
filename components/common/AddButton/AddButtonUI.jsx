@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { FaPen } from "react-icons/fa";
 
@@ -8,7 +9,6 @@ import { FaPen } from "react-icons/fa";
 export default function AddButtonUI({ category, variant = 'gallery', isAdmin }) {
   // 관리자가 아니면 버튼 숨김
   if (!isAdmin) return null;
-  
   const isVideoCategory = category === "MV" || category === "VIDEO";
   const isAbout = variant === 'aboutme';
 

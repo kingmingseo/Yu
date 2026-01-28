@@ -3,6 +3,7 @@ import AddButtonUI from './AddButtonUI';
 const meta = {
   title: "Common/AddButton",
   component: AddButtonUI,
+  tags: ['autodocs'],
   argTypes: {
     isAdmin: {
       control: 'boolean',
@@ -26,6 +27,14 @@ export default meta;
 export const Admin = {
   args: {
     isAdmin: true,
+    category: 'GALLERY',
+    variant: 'gallery',
+  },
+};
+
+export const NonAdmin = {
+  args: {
+    isAdmin: false,
     category: 'GALLERY',
     variant: 'gallery',
   },
