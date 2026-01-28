@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = 'https://your-domain.com'; // 실제 도메인으로 교체하세요
+  const baseUrl = 'https://me-and-yu.vercel.app/'; // 실제 도메인으로 교체하세요
   
   return [
     {
