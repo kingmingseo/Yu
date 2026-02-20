@@ -12,11 +12,8 @@ export const metadata = {
   authors: [{ name: 'Yu Gwang Yeong' }],
   creator: 'Yu Gwang Yeong',
   publisher: 'Yu Gwang Yeong',
-  // 카카오톡 링크 미리보기 비활성화
-  openGraph: {
-    type: 'website',
-    images: [], // 빈 배열로 설정하여 이미지 없음
-  },
+  // 카카오톡 링크 미리보기 완전 비활성화 - Open Graph 제거
+  // openGraph를 아예 정의하지 않으면 Next.js가 자동 생성하지 않음
   robots: {
     index: true,
     follow: true,
@@ -27,9 +24,6 @@ export const metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
-  },
-  other: {
-    'kakaotalk-scrap': 'false', // 카카오톡 스크랩 비활성화
   },
 };
 export default async function RootLayout({ children }) {
