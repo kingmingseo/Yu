@@ -23,23 +23,6 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
-  openGraph: {
-    type: 'website',
-    locale: 'ko_KR',
-    url: 'https://your-domain.com',
-    title: 'Yu Gwang Yeong - Korean Fashion Model',
-    description: "Korean fashion model Yu Gwang Yeong's official portfolio. Discover her latest work, gallery, daily life, and professional modeling services.",
-    siteName: 'Yu Gwang Yeong',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Yu Gwang Yeong - Korean Fashion Model',
-    description: "Korean fashion model Yu Gwang Yeong's official portfolio.",
-    creator: '@yu_gwang0',
-  },
-  verification: {
-    google: 'your-google-verification-code', // Google Search Console에서 받은 코드로 교체
-  },
 };
 export default async function RootLayout({ children }) {
   return (
