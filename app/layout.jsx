@@ -12,8 +12,10 @@ export const metadata = {
   authors: [{ name: 'Yu Gwang Yeong' }],
   creator: 'Yu Gwang Yeong',
   publisher: 'Yu Gwang Yeong',
-  // 카카오톡 링크 미리보기 완전 비활성화 - Open Graph 제거
-  // openGraph를 아예 정의하지 않으면 Next.js가 자동 생성하지 않음
+  // Open Graph 완전 제거 - 빈 객체로 설정하여 모든 OG 태그 제거
+  openGraph: {
+    // 모든 필드를 빈 값으로 설정하여 OG 태그 생성 방지
+  },
   robots: {
     index: true,
     follow: true,
