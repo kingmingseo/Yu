@@ -5,19 +5,25 @@ import Navigation from "@/components/navigation";
 import Providers from "@/components/provider"
 import { Analytics } from "@vercel/analytics/next"
 
-// Open Graph 이미지 완전 제거
 export const metadata = {
-  // Next.js가 자동으로 생성하는 Open Graph 태그 제거
-  openGraph: {
-    images: [], // 빈 배열로 설정하여 og:image 태그 생성 방지
-  },
-  // icons도 제거하여 favicon이 OG 이미지로 사용되지 않도록
-  icons: {
-    icon: [],
-    apple: [],
+  title: 'Yu',
+  description: "Korean fashion model Yu Gwang Yeong's official portfolio. Discover her latest work, gallery, daily life, and professional modeling services.",
+  keywords: ['Korean fashion model', 'Yu Gwang Yeong', 'fashion portfolio', 'modeling', 'Korea', 'fashion', 'photography'],
+  authors: [{ name: 'Yu Gwang Yeong' }],
+  creator: 'Yu Gwang Yeong',
+  publisher: 'Yu Gwang Yeong',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
-
 export default async function RootLayout({ children }) {
   return (
     <html lang="ko">
