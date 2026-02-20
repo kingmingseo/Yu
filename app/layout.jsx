@@ -12,9 +12,17 @@ export const metadata = {
   authors: [{ name: 'Yu Gwang Yeong' }],
   creator: 'Yu Gwang Yeong',
   publisher: 'Yu Gwang Yeong',
-  // Open Graph 완전 제거 - 빈 객체로 설정하여 모든 OG 태그 제거
+  // Open Graph 완전 제거 - 카카오톡 링크 미리보기 방지
   openGraph: {
-    // 모든 필드를 빈 값으로 설정하여 OG 태그 생성 방지
+    images: [], // 빈 배열로 설정하여 이미지 태그 생성 방지
+    // 다른 필드도 명시적으로 제거
+    url: undefined,
+    siteName: undefined,
+  },
+  // icons도 제거하여 favicon 등이 OG 이미지로 사용되지 않도록
+  icons: {
+    icon: [],
+    apple: [],
   },
   robots: {
     index: true,
