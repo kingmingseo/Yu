@@ -37,13 +37,6 @@ export default function VideoDeleteButtonContainer({
         if (response.ok) {
           const redirectPath = `/GALLERY/${category}`;
 
-          // 캐시 무효화
-          await fetch("/api/revalidate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path: redirectPath }),
-          });
-
           alert("성공적으로 삭제되었습니다.");
           router.push(redirectPath);
           router.refresh();

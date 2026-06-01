@@ -21,13 +21,6 @@ export function useDeleteContent({ section, action, category, id }) {
         if (response.ok) {
           // 리다이렉트 경로 결정
 
-          // 캐시 무효화
-          await fetch("/api/revalidate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path: config.revalidatePath }),
-          });
-
           alert("성공적으로 삭제되었습니다.");
           router.push(config.redirectPath);
           router.refresh();
