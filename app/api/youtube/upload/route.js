@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/util/database";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/adminAuth";
 
 // 업로드 완료 후 videoId를 받아 메타 정보를 저장하는 전용 API
 export async function POST(request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const { videoId, category } = await request.json();
     if (!videoId || typeof videoId !== "string") {

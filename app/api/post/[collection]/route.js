@@ -1,6 +1,10 @@
 import { connectDB } from "@/util/database";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function POST(request, { params }) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { collection } = await params;
 
   // 유효한 컬렉션인지 확인

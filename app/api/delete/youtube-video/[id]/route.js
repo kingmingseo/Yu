@@ -1,7 +1,11 @@
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function DELETE(request, { params }) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { id } = await params;
 
   try {

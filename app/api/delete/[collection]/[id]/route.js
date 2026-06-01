@@ -1,8 +1,12 @@
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import aws from "aws-sdk";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function DELETE(request, { params }) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { collection, id } = await params;
 
   // 유효한 컬렉션인지 확인

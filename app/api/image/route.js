@@ -1,6 +1,10 @@
 import aws from "aws-sdk";
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function GET(request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { searchParams } = new URL(request.url);
   const file = searchParams.get('file');
 

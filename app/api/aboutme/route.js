@@ -1,4 +1,5 @@
 import { connectDB } from "@/util/database";
+import { requireAdmin } from "@/lib/adminAuth";
 import { revalidatePath } from "next/cache";
 
 export async function GET() {
@@ -14,6 +15,9 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const client = await connectDB;
     const db = client.db("Yu");
@@ -59,6 +63,9 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const client = await connectDB;
     const db = client.db("Yu");

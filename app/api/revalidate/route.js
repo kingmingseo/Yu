@@ -1,6 +1,10 @@
 import { revalidatePath } from 'next/cache';
+import { requireAdmin } from "@/lib/adminAuth";
 
 export async function POST(request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const { path } = await request.json();
     
