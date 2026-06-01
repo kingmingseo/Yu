@@ -3,11 +3,9 @@ import { convertHeicToWebp } from "@/util/heicImageCompression";
 import { compressImage } from "@/util/imageCompression";
 import { uploadMultipleImages, uploadSingleImage } from "@/util/imageUpload";
 import { getRouteConfig } from "@/util/routeConfig";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export function usePostContent({ section, action, category, id, title }) {
-  const router= useRouter()
   const [contentImageFiles, setContentImageFiles] = useState([]); // 컨텐츠 파일 객체 저장용
   const [mainImageFile, setMainImageFile] = useState(null); // 메인 이미지 파일 객체 저장용
 
@@ -93,7 +91,7 @@ export function usePostContent({ section, action, category, id, title }) {
         });
 
         alert("글 작성이 완료되었습니다.");
-        router.push(config.redirectPath);
+        window.location.href = config.redirectPath;
       } else {
         alert("알 수 없는 오류 [글 작성 실패].");
       }

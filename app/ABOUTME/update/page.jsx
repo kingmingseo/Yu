@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { generateUniqueFilename } from "@/util/filename";
 import GeneralButton from "@/components/common/GeneralButton";
 
 export default function AboutMeUpdate() {
-  const router = useRouter();
   const [images, setImages] = useState(Array(5).fill(""));
   const [isLoading, setIsLoading] = useState(true);
   const [uploadingIndex, setUploadingIndex] = useState(null);
@@ -100,7 +98,7 @@ export default function AboutMeUpdate() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: "/ABOUTME" }),
       });
-      router.push("/ABOUTME");
+      window.location.href = "/ABOUTME";
     } catch (error) {
       console.error("Error updating intro:", error);
       alert("An error occurred.");

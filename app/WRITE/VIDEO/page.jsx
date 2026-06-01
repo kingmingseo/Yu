@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import GeneralButton from "@/components/common/GeneralButton";
 import Script from "next/script";
 import getYouTubeToken from "@/util/getYoutubeToken";
 
 function VideoWriteContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const category = searchParams.get("category") || "VIDEO"; // MV | VIDEO
   const [title, setTitle] = useState("");
@@ -160,7 +159,7 @@ function VideoWriteContent() {
             });
 
             alert("영상이 성공적으로 업로드되었습니다.");
-            router.push(`/GALLERY/${category}`);
+            window.location.href = `/GALLERY/${category}`;
           } catch (e) {
             alert(`업로드 실패: ${e.message}`);
           } finally {
