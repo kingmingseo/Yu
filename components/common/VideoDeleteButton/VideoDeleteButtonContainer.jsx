@@ -46,6 +46,7 @@ export default function VideoDeleteButtonContainer({
 
           alert("성공적으로 삭제되었습니다.");
           router.push(redirectPath);
+          router.refresh();
         } else {
           const errorData = await response.json();
           console.error("삭제 실패:", errorData);

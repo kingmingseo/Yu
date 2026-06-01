@@ -1,6 +1,7 @@
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import { requireAdmin } from "@/lib/adminAuth";
+import { revalidatePath } from "next/cache";
 
 export async function DELETE(request, { params }) {
   const unauthorized = await requireAdmin();
@@ -90,6 +91,10 @@ export async function DELETE(request, { params }) {
     }
 
     console.log(`YouTube 비디오 삭제 완료: ${id}`);
+
+    const routeCategory =
+      documentToDelete.category === "MV" ? "MV" : "VIDEO";
+    revalidatePath(`/GALLERY/${routeCategory}`);
 
     return Response.json(
       {

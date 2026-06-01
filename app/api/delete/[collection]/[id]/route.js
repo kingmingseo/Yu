@@ -2,6 +2,7 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import aws from "aws-sdk";
 import { requireAdmin } from "@/lib/adminAuth";
+import { revalidatePath } from "next/cache";
 
 export async function DELETE(request, { params }) {
   const unauthorized = await requireAdmin();
@@ -136,7 +137,10 @@ export async function DELETE(request, { params }) {
     }
 
     console.log(`Deleted document from ${collection}:`, id);
-    // 클라이언트(DeleteButton)에서 경로 무효화 처리
+
+    for (const path of getRevalidationPaths(collection, id)) {
+      revalidatePath(path);
+    }
 
     return Response.json(
       {
@@ -156,4 +160,13 @@ export async function DELETE(request, { params }) {
       { status: 500 }
     );
   }
+}
+
+function getRevalidationPaths(collection, id) {
+  if (collection === "sponsorship") {
+    return ["/SPONSORSHIP", `/SPONSORSHIP/${id}`];
+  }
+
+  const category = collection.toUpperCase();
+  return [`/GALLERY/${category}`, `/GALLERY/${category}/${id}`];
 }
