@@ -93,11 +93,6 @@ export default function AboutMeUpdate() {
       }
 
       alert("수정이 완료 되었습니다");
-      await fetch("/api/revalidate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: "/ABOUTME" }),
-      });
       window.location.href = "/ABOUTME";
     } catch (error) {
       console.error("Error updating intro:", error);
@@ -137,13 +132,6 @@ export default function AboutMeUpdate() {
           const newImages = [...images];
           newImages[index] = "";
           setImages(newImages);
-
-          // 캐시 무효화
-          await fetch("/api/revalidate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path: "/ABOUTME" }),
-          });
 
           console.log(`Image at index ${index} deleted successfully`);
           alert("이미지가 삭제되었습니다.");

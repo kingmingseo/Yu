@@ -149,15 +149,6 @@ function VideoWriteContent() {
               throw new Error(`저장 실패: ${t}`);
             }
 
-            // 캐시 무효화
-            await fetch("/api/revalidate", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                path: `/GALLERY/${category.toUpperCase}`,
-              }),
-            });
-
             alert("영상이 성공적으로 업로드되었습니다.");
             window.location.href = `/GALLERY/${category}`;
           } catch (e) {

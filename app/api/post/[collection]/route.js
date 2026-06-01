@@ -1,5 +1,6 @@
 import { connectDB } from "@/util/database";
 import { requireAdmin } from "@/lib/adminAuth";
+import { revalidatePath } from "next/cache";
 
 export async function POST(request, { params }) {
   const unauthorized = await requireAdmin();
@@ -83,7 +84,9 @@ export async function POST(request, { params }) {
     // 컬렉션에 문서 삽입
     const result = await db.collection(collection).insertOne(document);
 
-    // 클라이언트(AddButton/작성 폼)에서 경로 무효화 처리
+    for (const path of getRevalidationPaths(collection, result.insertedId)) {
+      revalidatePath(path);
+    }
 
     return Response.json(
       {
@@ -102,4 +105,13 @@ export async function POST(request, { params }) {
       { status: 500 }
     );
   }
+}
+
+function getRevalidationPaths(collection, id) {
+  if (collection === "sponsorship") {
+    return ["/SPONSORSHIP", `/SPONSORSHIP/${id}`];
+  }
+
+  const category = collection.toUpperCase();
+  return [`/GALLERY/${category}`, `/GALLERY/${category}/${id}`];
 }

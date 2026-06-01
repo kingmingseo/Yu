@@ -83,13 +83,6 @@ export function usePostContent({ section, action, category, id, title }) {
       });
 
       if (response.ok) {
-        // 캐시 무효화
-        await fetch("/api/revalidate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ path: config.revalidatePath }),
-        });
-
         alert("글 작성이 완료되었습니다.");
         window.location.href = config.redirectPath;
       } else {
