@@ -12,7 +12,7 @@ function VideoWriteContent() {
   const [title, setTitle] = useState("");
   const [videoFile, setVideoFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  
+
   return (
     <div className="flex flex-col items-center p-5 bg-black min-h-screen text-white max-w-4xl mx-auto">
       {/* Google Identity Services for OAuth token client (YouTube upload) */}
@@ -21,6 +21,7 @@ function VideoWriteContent() {
         strategy="afterInteractive"
       />
       <h1 className="text-2xl font-extralight mb-5">New Video</h1>
+
       {/* 제목 입력 */}
       <div className="mb-5 w-full">
         <label htmlFor="title" className="block text-sm font-medium mb-1">
@@ -82,6 +83,7 @@ function VideoWriteContent() {
           )}
         </label>
       </div>
+
       <GeneralButton
         label="Post"
         ariaLabel="Post"
@@ -101,31 +103,23 @@ function VideoWriteContent() {
 
           setIsUploading(true);
           try {
-            // OAuth 토큰 발급
             const accessToken = await getYouTubeToken();
-
-            // 업로드 메타데이터
-            const metadata = {
-              snippet: { title: title || videoFile.name },
-              status: { privacyStatus: "public" },
-            };
+            if (!accessToken) throw new Error("YouTube 토큰 발급 실패");
 
             // 1) 업로드 세션 생성
-            const initRes = await fetch(
-              "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
-              {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${accessToken}`,
-                  "Content-Type": "application/json; charset=UTF-8",
-                  "X-Upload-Content-Length": String(videoFile.size),
-                  "X-Upload-Content-Type": videoFile.type || "video/*",
-                },
-                body: JSON.stringify(metadata),
-              }
-            );
+            const initRes = await fetch("/api/youtube/upload-session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                title: title || videoFile.name,
+                fileSize: videoFile.size,
+                fileType: videoFile.type,
+                accessToken,
+              }),
+            });
             if (!initRes.ok) throw new Error("업로드 세션 생성 실패");
-            const uploadUrl = initRes.headers.get("location");
+
+            const { uploadUrl } = await initRes.json();
             if (!uploadUrl) throw new Error("업로드 URL 없음");
 
             // 2) 실제 업로드
@@ -135,24 +129,24 @@ function VideoWriteContent() {
               body: videoFile,
             });
             if (!uploadRes.ok) throw new Error("비디오 업로드 실패");
+
             const json = await uploadRes.json();
             const videoId = json.id;
 
-            // 업로드 성공 → 메타 저장 호출
             const saveRes = await fetch("/api/youtube/upload", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ videoId, category }),
             });
             if (!saveRes.ok) {
-              const t = await saveRes.text();
-              throw new Error(`저장 실패: ${t}`);
+              const text = await saveRes.text();
+              throw new Error(`저장 실패: ${text}`);
             }
 
             alert("영상이 성공적으로 업로드되었습니다.");
             window.location.href = `/GALLERY/${category}`;
-          } catch (e) {
-            alert(`업로드 실패: ${e.message}`);
+          } catch (error) {
+            alert(`업로드 실패: ${error.message}`);
           } finally {
             setIsUploading(false);
           }
