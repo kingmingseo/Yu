@@ -7,12 +7,12 @@ import imageCompression from "browser-image-compression";
  */
 export const compressImage = async (file) => {
   const options = {
-    maxSizeMB: 1, // 최대 파일 크기 1MB
+    maxSizeMB: 2, // 최대 파일 크기 2MB
     maxWidthOrHeight: 1920, // 최대 해상도 1920px
     useWebWorker: false, // 웹 워커 비활성화 (타임아웃 방지)
     fileType: 'image/webp', // WebP 포맷으로 변환
-    quality: 0.7, // 품질 70% (더 강한 압축)
-    initialQuality: 0.8, // 초기 품질
+    quality: 0.85, // 품질 85% (더 선명한 이미지)
+    initialQuality: 0.9, // 초기 품질
     alwaysKeepResolution: false, // 해상도 조정 허용
   };
 

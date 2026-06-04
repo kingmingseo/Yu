@@ -29,7 +29,7 @@ export const Admin = {
     category: 'VIDEO',
     isAdmin: true,
     onDelete: () => {
-      console.log('Delete button clicked in Storybook');
+
       alert('삭제 버튼 클릭됨 (스토리북)');
     },
   },

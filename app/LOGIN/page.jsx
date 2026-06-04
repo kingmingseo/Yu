@@ -26,7 +26,6 @@ export default function Login() {
       if (result.error) {
         setError("Login failed, check your email and password.");
       } else {
-        console.log("로그인 성공!");
         router.push("/");
       }
     } catch (error) {

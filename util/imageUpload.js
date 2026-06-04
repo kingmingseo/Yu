@@ -1,5 +1,4 @@
 import { generateUniqueFilename } from "./filename";
-import { compressImage } from "./imageCompression";
 
 /**
  * 단일 이미지를 S3에 업로드하는 함수
@@ -8,10 +7,7 @@ import { compressImage } from "./imageCompression";
  */
 export const uploadSingleImage = async (file) => {
   try {
-    // 이미지 압축
-    const compressedFile = await compressImage(file);
-
-    const uniqueFilename = generateUniqueFilename(compressedFile.name);
+    const uniqueFilename = generateUniqueFilename(file.name);
     const filename = encodeURIComponent(
       uniqueFilename.replace(/\.[^/.]+$/, ".webp")
     );
@@ -21,7 +17,7 @@ export const uploadSingleImage = async (file) => {
     res = await res.json();
 
     const formData = new FormData();
-    Object.entries({ ...res.fields, file: compressedFile }).forEach(
+    Object.entries({ ...res.fields, file }).forEach(
       ([key, value]) => {
         formData.append(key, value);
       }
@@ -50,13 +46,8 @@ export const uploadSingleImage = async (file) => {
  */
 export const uploadMultipleImages = async (files) => {
   try {
-    // 모든 파일을 압축
-    const compressedFiles = await Promise.all(
-      files.map((file) => compressImage(file))
-    );
-
     const uploadedUrls = await Promise.all(
-      compressedFiles.map(async (file) => {
+      files.map(async (file) => {
         const uniqueFilename = generateUniqueFilename(file.name);
         const filename = encodeURIComponent(
           uniqueFilename.replace(/\.[^/.]+$/, ".webp")

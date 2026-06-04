@@ -11,7 +11,6 @@ export default async function Aboutme() {
   const client = await connectDB;
   const db = client.db("Yu");
   const data = await db.collection("Aboutme").find().toArray();
-  console.log(data);
   return (
     <>
       <div className="min-h-screen bg-black text-white">

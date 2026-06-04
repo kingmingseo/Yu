@@ -133,7 +133,6 @@ export default function AboutMeUpdate() {
           newImages[index] = "";
           setImages(newImages);
 
-          console.log(`Image at index ${index} deleted successfully`);
           alert("이미지가 삭제되었습니다.");
         } else {
           const errorData = await response.json();
