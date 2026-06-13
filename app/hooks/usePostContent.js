@@ -1,24 +1,42 @@
 import { isHeicFile } from "@/util/fileTypeDetector";
-import { convertHeicToWebp } from "@/util/heicImageCompression";
+import { convertHeicToWebp } from "@/util/heicImageConvert";
 import { compressImage } from "@/util/imageCompression";
 import { uploadMultipleImages, uploadSingleImage } from "@/util/imageUpload";
 import { getRouteConfig } from "@/util/routeConfig";
 import { useState } from "react";
 
-export function usePostContent({ section, action, category, id, title }) {
-  const [contentImageFiles, setContentImageFiles] = useState([]); // 컨텐츠 파일 객체 저장용
-  const [mainImageFile, setMainImageFile] = useState(null); // 메인 이미지 파일 객체 저장용
+const MAX_ORIGINAL_UPLOAD_SIZE = 5 * 1024 * 1024;
 
-   // 로딩 상태 추가
+const processImageForUpload = async (file) => {
+  if (file.size <= MAX_ORIGINAL_UPLOAD_SIZE) {
+    console.log("5MB 이하 이미지, 원본 업로드:", file.name, file.size);
+    return file;
+  }
+
+  console.log("5MB 초과 이미지, 압축 후 업로드:", file.name, file.size);
+
+  if (isHeicFile(file)) {
+    const convertedFile = await convertHeicToWebp(file);
+    return convertedFile.size > MAX_ORIGINAL_UPLOAD_SIZE
+      ? await compressImage(convertedFile)
+      : convertedFile;
+  }
+
+  return await compressImage(file);
+};
+
+export function usePostContent({ section, action, category, id, title }) {
+  const [contentImageFiles, setContentImageFiles] = useState([]);
+  const [mainImageFile, setMainImageFile] = useState(null);
+
   const [isMainImageUploading, setIsMainImageUploading] = useState(false);
-  const [isContentImagesUploading, setIsContentImagesUploading] = useState(false);
+  const [isContentImagesUploading, setIsContentImagesUploading] =
+    useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
   const postData = async () => {
-    // 로딩 시작
     setIsPosting(true);
 
-    // 입력값 검증
     if (!title) {
       alert("제목을 입력해주세요.");
       setIsPosting(false);
@@ -32,46 +50,23 @@ export function usePostContent({ section, action, category, id, title }) {
     }
 
     try {
-      // 메인 이미지 S3 업로드
       setIsMainImageUploading(true);
-      let processedMainFile;
-
-      if (isHeicFile(mainImageFile)) {
-        console.log("HEIC 파일 감지, HEIC 압축기 사용");
-        processedMainFile = await convertHeicToWebp(mainImageFile);
-      } else {
-        console.log("일반 이미지 파일, browser-image-compression 사용");
-        processedMainFile = await compressImage(mainImageFile);
-      }
-
+      const processedMainFile = await processImageForUpload(mainImageFile);
       const mainImageUrl = await uploadSingleImage(processedMainFile);
       setIsMainImageUploading(false);
 
-      // 컨텐츠 이미지들 S3 업로드
       let contentImageUrls = [];
       if (contentImageFiles.length > 0) {
         setIsContentImagesUploading(true);
-
         const processedContentFiles = await Promise.all(
-          contentImageFiles.map(async (file) => {
-            if (isHeicFile(file)) {
-              console.log("HEIC 파일 감지, HEIC 압축기 사용");
-              return await convertHeicToWebp(file);
-            } else {
-              console.log("일반 이미지 파일, browser-image-compression 사용");
-              return await compressImage(file);
-            }
-          })
+          contentImageFiles.map((file) => processImageForUpload(file))
         );
-
         contentImageUrls = await uploadMultipleImages(processedContentFiles);
         setIsContentImagesUploading(false);
       }
 
-      // 통합 POST API 엔드포인트 생성
       const config = getRouteConfig(section, action, category, id);
 
-      // S3 URL을 포함한 데이터 전송
       const response = await fetch(config.endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,12 +87,20 @@ export function usePostContent({ section, action, category, id, title }) {
       console.error("Error posting data:", error);
       alert("데이터 전송 중 오류가 발생했습니다.");
     } finally {
-      // 로딩 종료
       setIsPosting(false);
       setIsMainImageUploading(false);
       setIsContentImagesUploading(false);
     }
   };
-  
-  return { postData, isPosting, isMainImageUploading, isContentImagesUploading, contentImageFiles, mainImageFile,setContentImageFiles, setMainImageFile };
+
+  return {
+    postData,
+    isPosting,
+    isMainImageUploading,
+    isContentImagesUploading,
+    contentImageFiles,
+    mainImageFile,
+    setContentImageFiles,
+    setMainImageFile,
+  };
 }

@@ -6,7 +6,7 @@ export const convertHeicToWebp = async (heicFile) => {
     const convertedBlob = await heic2any({
       blob: heicFile,
       toType: "image/webp",
-      quality: 0.8,
+      quality: 1.0,
     });
 
     return new File(
