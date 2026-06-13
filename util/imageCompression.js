@@ -7,7 +7,7 @@ import imageCompression from "browser-image-compression";
  */
 export const compressImage = async (file) => {
   const options = {
-    maxSizeMB: 2, // 최대 파일 크기 2MB
+    maxSizeMB: 5, // 최대 파일 크기 2MB
     maxWidthOrHeight: 1920, // 최대 해상도 1920px
     useWebWorker: false, // 웹 워커 비활성화 (타임아웃 방지)
     fileType: 'image/webp', // WebP 포맷으로 변환

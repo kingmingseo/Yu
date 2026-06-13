@@ -6,7 +6,8 @@ export async function GET(request) {
   if (unauthorized) return unauthorized;
 
   const { searchParams } = new URL(request.url);
-  const file = searchParams.get('file');
+  const file = searchParams.get("file");
+  const fileType = searchParams.get("fileType") || "application/octet-stream";
 
   aws.config.update({
     accessKeyId: process.env.ACCESS_KEY,
@@ -18,10 +19,14 @@ export async function GET(request) {
   const s3 = new aws.S3();
   const url = await s3.createPresignedPost({
     Bucket: process.env.BUCKET_NAME,
-    Fields: { key: file },
-    Expires: 60, // seconds
+    Fields: {
+      key: file,
+      "Content-Type": fileType,
+    },
+    Expires: 60,
     Conditions: [
-      ["content-length-range", 0, 52428800], //파일용량 50MB 까지 제한
+      { "Content-Type": fileType },
+      ["content-length-range", 0, 52428800],
     ],
   });
 
