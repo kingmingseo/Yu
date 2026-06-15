@@ -1,8 +1,16 @@
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
-import aws from "aws-sdk";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { requireAdmin } from "@/lib/adminAuth";
 import { revalidatePath } from "next/cache";
+
+const s3Client = new S3Client({
+  region: "ap-northeast-2",
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY,
+    secretAccessKey: process.env.SECRET_KEY,
+  },
+});
 
 export async function DELETE(request, { params }) {
   const unauthorized = await requireAdmin();
@@ -53,14 +61,6 @@ export async function DELETE(request, { params }) {
     }
 
     // S3 파일 삭제를 위한 설정
-    aws.config.update({
-      accessKeyId: process.env.ACCESS_KEY,
-      secretAccessKey: process.env.SECRET_KEY,
-      region: "ap-northeast-2",
-      signatureVersion: "v4",
-    });
-
-    const s3 = new aws.S3();
     const bucketName = process.env.BUCKET_NAME;
 
     // S3에서 삭제할 파일 URL들 수집
@@ -106,12 +106,13 @@ export async function DELETE(request, { params }) {
         const urlParts = url.split("/");
         const key = urlParts.slice(3).join("/"); // 버킷명 이후의 경로
 
-        return s3
-          .deleteObject({
-            Bucket: bucketName,
-            Key: key,
-          })
-          .promise()
+        return s3Client
+          .send(
+            new DeleteObjectCommand({
+              Bucket: bucketName,
+              Key: key,
+            })
+          )
           .catch((error) => {
             console.error(`S3 파일 삭제 실패 (${key}):`, error);
             // 개별 파일 삭제 실패는 전체 삭제를 중단하지 않음
