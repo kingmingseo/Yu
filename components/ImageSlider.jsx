@@ -81,6 +81,7 @@ export default function ImageSlider({
           fill
           className="object-contain transition-transform duration-500 ease-in-out"
           priority
+          quality={100}
         />
 
         {/* 이전/다음 버튼 */}
@@ -163,6 +164,7 @@ export default function ImageSlider({
                 alt={image.alt || `썸네일 ${index + 1}`}
                 fill
                 className="object-cover"
+                quality={100}
               />
             </button>
           ))}

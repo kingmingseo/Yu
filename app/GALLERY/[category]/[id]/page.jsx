@@ -35,6 +35,7 @@ export default async function Detail({ params }) {
             alt={data.title}
             width={600}
             height={800}
+            quality={100}
           />
         )}
 
@@ -48,6 +49,7 @@ export default async function Detail({ params }) {
               alt={`${data.title} content ${index + 1}`}
               width={600}
               height={800}
+              quality={100}
             />
           ))
         ) : (

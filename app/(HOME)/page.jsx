@@ -9,6 +9,7 @@ export default function Home() {
           alt="Image 1"
           fill
           className="object-cover object-top overflow-hidden"
+          quality={100}
           priority
         />
       </div>
@@ -18,6 +19,7 @@ export default function Home() {
           alt="Image 2"
           fill
           className="object-cover object-top overflow-hidden"
+          quality={100}
           priority
         />
       </div>
