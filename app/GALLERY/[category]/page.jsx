@@ -8,7 +8,7 @@ export const revalidate = false;
 
 export async function generateStaticParams() {
   const categories = [
-    "LOOKBOOK",
+    // "LOOKBOOK",
     "POLAROID",
     "BEAUTY",
     "MEDIA",
