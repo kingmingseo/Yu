@@ -29,7 +29,7 @@ export const uploadSingleImage = async (file) => {
     });
 
     if (uploadResult.ok) {
-      return `${uploadResult.url}/${filename}`;
+      return `${uploadResult.url}${filename}`;
     } else {
       throw new Error("이미지 업로드에 실패했습니다.");
     }

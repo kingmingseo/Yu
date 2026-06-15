@@ -1,5 +1,14 @@
-import aws from "aws-sdk";
+import { S3Client } from "@aws-sdk/client-s3";
+import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { requireAdmin } from "@/lib/adminAuth";
+
+const s3Client = new S3Client({
+  region: "ap-northeast-2",
+  credentials: {
+    accessKeyId: process.env.ACCESS_KEY,
+    secretAccessKey: process.env.SECRET_KEY,
+  },
+});
 
 export async function GET(request) {
   const unauthorized = await requireAdmin();
@@ -9,18 +18,10 @@ export async function GET(request) {
   const file = searchParams.get("file");
   const fileType = searchParams.get("fileType") || "application/octet-stream";
 
-  aws.config.update({
-    accessKeyId: process.env.ACCESS_KEY,
-    secretAccessKey: process.env.SECRET_KEY,
-    region: "ap-northeast-2",
-    signatureVersion: "v4",
-  });
-
-  const s3 = new aws.S3();
-  const url = await s3.createPresignedPost({
+  const url = await createPresignedPost(s3Client, {
     Bucket: process.env.BUCKET_NAME,
+    Key: file,
     Fields: {
-      key: file,
       "Content-Type": fileType,
     },
     Expires: 60,

@@ -9,6 +9,12 @@ const nextConfig = {
         port: '',
         pathname: '/yugwangimgserver/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'yugwangimgserver.s3.ap-northeast-2.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   webpack: (config, { isServer }) => {
