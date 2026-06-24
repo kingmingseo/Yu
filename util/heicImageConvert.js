@@ -1,7 +1,7 @@
 import heic2any from "heic2any";
 
 export const convertHeicToWebp = async (heicFile) => {
-  // HEIC를 JPEG/PNG로 변환
+  // HEIC를 webp로 변환
   try {
     const convertedBlob = await heic2any({
       blob: heicFile,
