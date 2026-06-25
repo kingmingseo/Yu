@@ -10,9 +10,7 @@ export const dynamic = 'force-static';
 
 export default async function Detail({ params }) {
   const { id, category } = await params;
-  if (!isValidObjectId(id)) {
-    return notFound();
-  }
+
 
   const client = await connectDB;
   const db = client.db("Yu");
@@ -20,6 +18,9 @@ export default async function Detail({ params }) {
     .collection(category.toLowerCase())
     .findOne({ _id: new ObjectId(id) });
 
+  if (data){
+    return notFound();
+  }
   return (
     <>
       <div className="flex flex-col items-center">
