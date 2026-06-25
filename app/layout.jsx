@@ -4,6 +4,7 @@ import MarginWrapper from "@/components/marginwrapper";
 import Navigation from "@/components/navigation";
 import Providers from "@/components/provider"
 import { Analytics } from "@vercel/analytics/next"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata = {
   title: 'Yu',
