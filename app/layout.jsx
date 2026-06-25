@@ -34,6 +34,7 @@ export default async function RootLayout({ children }) {
           <MarginWrapper>{children}</MarginWrapper> {/* 경로에 따라 마진 처리 */}
           <AudioPlayer />
           <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>
