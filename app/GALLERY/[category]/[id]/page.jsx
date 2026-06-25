@@ -18,7 +18,8 @@ export default async function Detail({ params }) {
     .collection(category.toLowerCase())
     .findOne({ _id: new ObjectId(id) });
 
-  if (data){
+
+  if (!data) {
     return notFound();
   }
   return (
