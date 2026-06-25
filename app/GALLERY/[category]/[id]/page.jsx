@@ -2,7 +2,6 @@ import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import isValidObjectId from "@/util/checkObjectId";
 import DeleteButtonContainer from "@/components/common/DeleteButton/DeleteButtonContainer";
 
 export const revalidate = false;
