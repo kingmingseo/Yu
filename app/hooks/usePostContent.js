@@ -3,6 +3,7 @@ import { convertHeicToWebp } from "@/util/heicImageConvert";
 import { compressImage } from "@/util/imageCompression";
 import { uploadMultipleImages, uploadSingleImage } from "@/util/imageUpload";
 import { getRouteConfig } from "@/util/routeConfig";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const MAX_ORIGINAL_UPLOAD_SIZE = 5 * 1024 * 1024;
@@ -28,11 +29,10 @@ const processImageForUpload = async (file) => {
 export function usePostContent({ section, action, category, id, title }) {
   const [contentImageFiles, setContentImageFiles] = useState([]);
   const [mainImageFile, setMainImageFile] = useState(null);
-
   const [isMainImageUploading, setIsMainImageUploading] = useState(false);
-  const [isContentImagesUploading, setIsContentImagesUploading] =
-    useState(false);
+  const [isContentImagesUploading, setIsContentImagesUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
+  const router = useRouter()
 
   const postData = async () => {
     setIsPosting(true);
@@ -79,7 +79,8 @@ export function usePostContent({ section, action, category, id, title }) {
 
       if (response.ok) {
         alert("글 작성이 완료되었습니다.");
-        window.location.href = config.redirectPath;
+        router.push(config.redirectPath);
+        router.refresh(); 
       } else {
         alert("알 수 없는 오류 [글 작성 실패].");
       }
